@@ -4,11 +4,35 @@ import {
   HiOutlineClock, HiOutlineClipboardList, HiOutlineCalendar, 
   HiOutlinePlus, HiOutlineAcademicCap,
   HiOutlineCheckCircle, HiOutlineChevronLeft, HiOutlineChevronDown,
-  HiOutlineChevronRight
+  HiOutlineChevronRight, HiOutlineX
 } from 'react-icons/hi';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../hooks/useAuth';
+
+/* ── HELPERS ──────────────────────────────── */
+const formatDecimalHours = (decimal) => {
+  if (!decimal && decimal !== 0) return '00:00';
+  const totalMinutes = Math.round(decimal * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+};
+
+/* ── MODAL WRAPPER ────────────────────────── */
+function ModalWrapper({ title, onClose, children, width = '480px' }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={onClose}>
+      <div style={{ background: 'var(--bg-card)', borderRadius: '16px', padding: '1.75rem', width: '100%', maxWidth: width, border: '1px solid var(--border-color)', boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>{title}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '1.25rem', display: 'flex' }}><HiOutlineX /></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function SocialHours() {
   const { user } = useAuth();
@@ -92,13 +116,6 @@ export default function SocialHours() {
   const hasActivities = activities.length > 0;
   const hasAdditional = additionalHours.length > 0;
 
-  const formatDecimalHours = (decimal) => {
-    if (!decimal && decimal !== 0) return '00:00';
-    const totalMinutes = Math.round(decimal * 60);
-    const h = Math.floor(totalMinutes / 60);
-    const m = totalMinutes % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-  };
 
   const progress = studentInfo?.social_hours_required > 0 
     ? Math.min((studentInfo?.social_hours_completed / studentInfo?.social_hours_required) * 100, 100)
@@ -332,47 +349,47 @@ export default function SocialHours() {
 
       {/* Add Hours Modal */}
       {isAddHoursModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsAddHoursModalOpen(false)}>
-          <div className="modal-content animate-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-            <h3>Agregar Horas Manuales</h3>
-            <form onSubmit={handleAddHours} style={{ marginTop: '1rem' }}>
-              <div className="form-group">
-                <label>Cantidad de Horas</label>
-                <input 
-                  type="number" 
-                  step="0.5" 
-                  className="form-input" 
-                  value={newHours.hours} 
-                  onChange={e => setNewHours({...newHours, hours: e.target.value})} 
-                  required 
-                />
-              </div>
-              <div className="form-group">
-                <label>Motivo</label>
-                <textarea 
-                  className="form-input" 
-                  value={newHours.reason} 
-                  onChange={e => setNewHours({...newHours, reason: e.target.value})} 
-                  required 
-                />
-              </div>
-              <div className="form-group">
-                <label>Fecha</label>
-                <input 
-                  type="date" 
-                  className="form-input" 
-                  value={newHours.date_granted} 
-                  onChange={e => setNewHours({...newHours, date_granted: e.target.value})} 
-                  required 
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '1.5rem' }}>
-                <button type="button" className="btn btn-ghost" onClick={() => setIsAddHoursModalOpen(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <ModalWrapper title="Agregar Horas Manuales" onClose={() => setIsAddHoursModalOpen(false)}>
+          <form onSubmit={handleAddHours} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cantidad de Horas</label>
+              <input 
+                type="number" 
+                step="0.5" 
+                className="form-input" 
+                value={newHours.hours} 
+                onChange={e => setNewHours({...newHours, hours: e.target.value})} 
+                required 
+              />
+            </div>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Motivo</label>
+              <textarea 
+                className="form-input" 
+                rows={3}
+                value={newHours.reason} 
+                onChange={e => setNewHours({...newHours, reason: e.target.value})} 
+                required 
+                placeholder="Ej: Apoyo en evento de bienestar..."
+                style={{ resize: 'vertical' }}
+              />
+            </div>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</label>
+              <input 
+                type="date" 
+                className="form-input" 
+                value={newHours.date_granted} 
+                onChange={e => setNewHours({...newHours, date_granted: e.target.value})} 
+                required 
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-ghost" onClick={() => setIsAddHoursModalOpen(false)}>Cancelar</button>
+              <button type="submit" className="btn btn-primary" style={{ width: 'auto' }}>Guardar</button>
+            </div>
+          </form>
+        </ModalWrapper>
       )}
     </div>
   );
