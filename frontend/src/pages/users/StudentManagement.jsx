@@ -3,7 +3,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import {
   HiOutlineSearch, HiOutlineCheckCircle, HiOutlineClock,
   HiOutlineLockClosed, HiOutlineLockOpen, HiOutlinePencil,
-  HiOutlineClipboardList, HiOutlinePlus, HiOutlineX, HiOutlineXCircle,
+  HiOutlinePlus, HiOutlineX, HiOutlineXCircle,
   HiOutlineDuplicate, HiOutlineChevronLeft, HiOutlineChevronRight,
   HiOutlineFilter, HiOutlineSortAscending, HiOutlineSortDescending,
   HiOutlineChevronDown, HiOutlineTrash
@@ -85,65 +85,6 @@ function BlockModal({ student, onClose, onConfirm }) {
           </button>
         </div>
       </div>
-    </ModalWrapper>
-  );
-}
-
-/* ── LOAN HISTORY MODAL ───────────────────── */
-function LoanHistoryModal({ student, onClose }) {
-  const [loans, setLoans] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get(`/admin/students/${student.id}/loans`)
-      .then(r => setLoans(r.data))
-      .catch(() => toast.error('Error al cargar préstamos'))
-      .finally(() => setLoading(false));
-  }, [student.id]);
-
-  const statusColor = { SOLICITADO: '#a78bfa', ACTIVO: '#00acc9', DEVUELTO: '#80ba27', VENCIDO: '#ef4444' };
-  const statusLabel = { SOLICITADO: 'Solicitado', ACTIVO: 'Activo', DEVUELTO: 'Devuelto', VENCIDO: 'Vencido' };
-
-  return (
-    <ModalWrapper title={`Préstamos — ${student.first_name} ${student.last_name}`} onClose={onClose} width="640px">
-      {loading ? <div className="spinner" style={{ margin: '2rem auto' }} /> : (
-        loans.length === 0 ? (
-          <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>No hay préstamos registrados.</p>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 500 }}>Implemento</th>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 500 }}>Estado</th>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 500 }}>Inicio</th>
-                <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 500 }}>Devolución</th>
-                <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 500 }}>Horas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loans.map(l => (
-                <tr key={l.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                  <td style={{ padding: '8px 12px' }}>{l.item_name}</td>
-                  <td style={{ padding: '8px 12px' }}>
-                    <span style={{ color: statusColor[l.status] || '#94a3b8', background: `${statusColor[l.status]}22`, padding: '2px 8px', borderRadius: '99px', fontSize: '0.75rem' }}>
-                      {statusLabel[l.status] || l.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>
-                    {l.start_time ? new Date(l.start_time).toLocaleDateString('es-CO') : '—'}
-                  </td>
-                  <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>
-                    {l.returned_time ? new Date(l.returned_time).toLocaleDateString('es-CO') : '—'}
-                  </td>
-                  <td style={{ padding: '8px 12px', textAlign: 'right', color: l.hours_earned > 0 ? '#80ba27' : 'inherit' }}>
-                    {l.hours_earned > 0 ? `+${l.hours_earned}h` : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )
-      )}
     </ModalWrapper>
   );
 }
@@ -350,13 +291,6 @@ function StudentRow({ student, onAction }) {
             isRowHovered={isHovered}
           />
           <ActionBtn 
-            icon={<HiOutlineClipboardList />} 
-            label="Préstamos" 
-            colorHex="#a78bfa" 
-            onClick={() => onAction('loans', student)} 
-            isRowHovered={isHovered}
-          />
-          <ActionBtn 
             icon={<HiOutlinePlus />} 
             label="Añadir horas" 
             colorHex="#80ba27" 
@@ -490,7 +424,6 @@ export default function StudentManagement() {
   return (
     <div className="animate-fade-in">
       {modal?.type === 'block' && <BlockModal student={modal.student} onClose={() => setModal(null)} onConfirm={handleToggleStatus} />}
-      {modal?.type === 'loans' && <LoanHistoryModal student={modal.student} onClose={() => setModal(null)} />}
       {modal?.type === 'edit' && <EditStudentModal student={modal.student} onClose={() => setModal(null)} onSaved={fetchStudents} />}
       {modal?.type === 'hours' && <AddHoursModal student={modal.student} onClose={() => setModal(null)} onSaved={fetchStudents} />}
 
