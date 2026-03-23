@@ -7,6 +7,7 @@ from app.models.user import User
 from app.models.student import Student
 from app.schemas.loan import LoanResponse, LoanCreate, LoanAdminCreate, LoanRejectRequest, LoanListResponse
 from app.services.loan_service import LoanService
+from app.services.audit_service import AuditService
 from app.core.websockets import manager
 
 router = APIRouter()
@@ -53,6 +54,11 @@ def create_loan_direct(
         student_doc=loan_in["student_document"], 
         item_id=loan_in["item_id"]
     )
+    AuditService.log_action(
+        db, action="LOAN_CREATED", entity_type="loan", entity_id=loan.id,
+        user_id=current_user.id,
+        details={"item_id": loan_in["item_id"], "student_doc": loan_in["student_document"]}
+    )
     background_tasks.add_task(manager.broadcast, {"type": "loan_created", "loan_id": loan.id})
     return loan
 
@@ -66,6 +72,10 @@ def approve_loan(
 ) -> Any:
     """Aprobar una solicitud de préstamo."""
     loan = LoanService.approve_loan(db=db, loan_id=loan_id, admin_id=current_user.id)
+    AuditService.log_action(
+        db, action="LOAN_APPROVED", entity_type="loan", entity_id=loan_id,
+        user_id=current_user.id,
+    )
     background_tasks.add_task(manager.broadcast, {"type": "loan_updated", "loan_id": loan.id, "status": loan.status})
     return loan
 
@@ -79,6 +89,11 @@ def return_loan(
 ) -> Any:
     """Registrar devolución y calcular horas."""
     loan = LoanService.return_loan(db=db, loan_id=loan_id)
+    AuditService.log_action(
+        db, action="LOAN_RETURNED", entity_type="loan", entity_id=loan_id,
+        user_id=current_user.id,
+        details={"hours_earned": float(loan.hours_earned) if loan.hours_earned else 0}
+    )
     background_tasks.add_task(manager.broadcast, {"type": "loan_updated", "loan_id": loan.id, "status": loan.status})
     return loan
 
@@ -125,5 +140,10 @@ def reject_loan(
 ) -> Any:
     """Rechazar una solicitud de préstamo."""
     loan = LoanService.reject_loan(db=db, loan_id=loan_id, admin_id=current_user.id, reason=req.reason)
+    AuditService.log_action(
+        db, action="LOAN_REJECTED", entity_type="loan", entity_id=loan_id,
+        user_id=current_user.id,
+        details={"reason": req.reason}
+    )
     background_tasks.add_task(manager.broadcast, {"type": "loan_updated", "loan_id": loan.id, "status": loan.status})
     return loan

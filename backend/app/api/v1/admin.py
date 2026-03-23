@@ -23,6 +23,7 @@ from app.schemas.admin import (
 from app.schemas.roles import PermissionResponse, RolePermissionAssignment
 from app.schemas.auth import MessageResponse
 from app.services.admin_service import AdminService
+from app.services.audit_service import AuditService
 
 router = APIRouter(prefix="/admin", tags=["Administración"])
 
@@ -182,7 +183,12 @@ async def create_admin(
     """
     service = AdminService(db)
     admin = service.create_admin(data, current_user.id)
-    
+    # Audit
+    AuditService.log_action(
+        db, action="CREATE_ADMIN", entity_type="user", entity_id=admin.id,
+        user_id=current_user.id,
+        details={"email": admin.email, "role": admin.role.name if admin.role else None}
+    )
     return {
         "id": admin.id,
         "email": admin.email,
@@ -193,7 +199,7 @@ async def create_admin(
         "role_id": admin.role_id,
         "role_name": admin.role.name if admin.role else "Sin rol",
         "status": admin.status,
-        "is_verified": admin.is_verified,  # Agregado
+        "is_verified": admin.is_verified,
         "permissions": [],
         "created_at": admin.created_at,
         "updated_at": admin.updated_at
@@ -211,8 +217,12 @@ async def update_admin(
     """
     service = AdminService(db)
     admin = service.update_admin(user_id, data, current_user.id)
-    
-    # Obtener permisos (esto ya no debería dar error porque eliminamos created_at)
+    # Audit
+    AuditService.log_action(
+        db, action="UPDATE_ADMIN", entity_type="user", entity_id=user_id,
+        user_id=current_user.id,
+        details={"updated_fields": data.dict(exclude_unset=True)}
+    )
     permissions_data = service.get_admin_permissions(user_id)
     
     return {
@@ -305,7 +315,12 @@ async def update_admin_status(
     """
     service = AdminService(db)
     admin = service.update_admin_status(user_id, data, current_user.id)
-    
+    # Audit
+    AuditService.log_action(
+        db, action="UPDATE_ADMIN_STATUS", entity_type="user", entity_id=user_id,
+        user_id=current_user.id,
+        details={"new_status": data.status}
+    )
     permissions_data = service.get_admin_permissions(user_id)
     
     return {
@@ -562,9 +577,15 @@ async def toggle_student_status(
     if body.status == "INACTIVE":
         user.block_reason = body.block_reason or None
     else:
-        # Al desbloquear, limpiar motivo
         user.block_reason = None
     db.commit()
+    # Audit
+    action = "BLOCK_STUDENT" if body.status == "INACTIVE" else "UNBLOCK_STUDENT"
+    AuditService.log_action(
+        db, action=action, entity_type="student", entity_id=user_id,
+        user_id=current_user.id,
+        details={"student_email": user.email, "reason": body.block_reason or None}
+    )
     return {"message": f"Estado actualizado a {body.status}", "user_id": user_id}
 
 
@@ -711,9 +732,14 @@ async def add_additional_hours(
         granted_by_id=current_user.id
     )
     db.add(additional)
-    # Also update the cumulative social hours on the student
     student.social_hours_completed = (student.social_hours_completed or 0) + body.hours
     db.commit()
+    # Audit
+    AuditService.log_action(
+        db, action="ADD_MANUAL_HOURS", entity_type="student", entity_id=user_id,
+        user_id=current_user.id,
+        details={"hours": body.hours, "reason": body.reason, "date_granted": str(body.date_granted)}
+    )
     return {"message": f"{body.hours}h añadidas correctamente", "new_total": student.social_hours_completed}
 
 

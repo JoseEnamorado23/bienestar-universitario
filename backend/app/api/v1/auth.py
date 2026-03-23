@@ -13,6 +13,7 @@ from app.schemas.auth import (
 )
 from app.schemas.users import UserResponse
 from app.services.auth_service import AuthService
+from app.services.audit_service import AuditService
 from app.api.dependencies.auth import get_current_user
 from app.models.user import User
 from app.api.dependencies.permissions import require_super_admin 
@@ -56,7 +57,16 @@ async def login(
         ip_address=request.client.host,
         device_info=request.headers.get("user-agent")
     )
-    
+    # Audit
+    AuditService.log_action(
+        db,
+        action="LOGIN",
+        entity_type="user",
+        entity_id=result["user"]["id"],
+        user_id=result["user"]["id"],
+        ip_address=request.client.host,
+        details={"email": data.email, "role": result["user"]["role"]},
+    )
     return LoginResponse(
         access_token=result["access_token"],
         refresh_token=result["refresh_token"],
@@ -171,7 +181,15 @@ async def logout(
     service = AuthService(db)
     refresh_token = data.refresh_token if data else None
     service.logout(current_user.id, refresh_token)
-    
+    # Audit
+    AuditService.log_action(
+        db,
+        action="LOGOUT",
+        entity_type="user",
+        entity_id=current_user.id,
+        user_id=current_user.id,
+        details={"email": current_user.email},
+    )
     return MessageResponse(
         message="Sesión cerrada exitosamente"
     )
