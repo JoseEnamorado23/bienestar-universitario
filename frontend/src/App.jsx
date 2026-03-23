@@ -137,7 +137,7 @@ export default function App() {
             <Route path="horas" element={<SocialHours />} />
             <Route path="reportes" element={<PlaceholderPage title="Reportes" />} />
             <Route path="auditoria" element={
-              <ProtectedRoute requiredPermissions={['system:audit:logs']}>
+              <ProtectedRoute requiredPermissions={['system:audit_logs']}>
                 <AuditLog />
               </ProtectedRoute>
             } />

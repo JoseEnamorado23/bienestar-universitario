@@ -22,7 +22,7 @@ async def get_audit_logs(
     search: Optional[str] = Query(None),
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
-    current_user: User = Depends(require_permissions(["system:audit:logs"])),
+    current_user: User = Depends(require_permissions(["system:audit_logs"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -45,7 +45,7 @@ async def get_audit_logs(
 
 @router.get("/stats")
 async def get_audit_stats(
-    current_user: User = Depends(require_permissions(["system:audit:logs"])),
+    current_user: User = Depends(require_permissions(["system:audit_logs"])),
     db: Session = Depends(get_db),
 ):
     """
@@ -56,7 +56,7 @@ async def get_audit_stats(
 
 @router.get("/actions")
 async def get_audit_actions(
-    current_user: User = Depends(require_permissions(["system:audit:logs"])),
+    current_user: User = Depends(require_permissions(["system:audit_logs"])),
     db: Session = Depends(get_db),
 ):
     """
