@@ -175,9 +175,9 @@ export default function SocialHours() {
                 <button 
                   className="btn btn-primary" 
                   onClick={() => setIsAddHoursModalOpen(true)} 
-                  style={{ padding: '4px 10px', fontSize: '0.72rem', height: '28px', width: 'fit-content' }}
+                  style={{ padding: '4px 12px', fontSize: '0.8rem', height: '30px', width: 'fit-content' }}
                 >
-                  <HiOutlinePlus size={12} /> Agregar Horas Manuales
+                  <HiOutlinePlus size={14} /> Agregar Horas Manuales
                 </button>
               )}
             </div>
@@ -300,9 +300,9 @@ export default function SocialHours() {
                     <button 
                       className="btn btn-primary" 
                       onClick={(e) => { e.stopPropagation(); setIsAddHoursModalOpen(true); }}
-                      style={{ marginLeft: '1rem', padding: '2px 6px', fontSize: '0.62rem', height: '20px', width: 'fit-content' }}
+                      style={{ marginLeft: '1rem', padding: '2px 8px', fontSize: '0.75rem', height: '24px', width: 'fit-content' }}
                     >
-                      <HiOutlinePlus size={10} /> Añadir
+                      <HiOutlinePlus size={12} /> Añadir
                     </button>
                   )}
                 </div>
@@ -337,8 +337,8 @@ export default function SocialHours() {
               {expandedSections.additional && !hasAdditional && user.role !== 'student' && (
                 <div style={{ padding: '1.5rem', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.75rem' }}>No hay horas manuales registradas.</p>
-                  <button className="btn btn-primary" onClick={() => setIsAddHoursModalOpen(true)} style={{ padding: '4px 10px', fontSize: '0.72rem', height: '28px', width: 'fit-content', margin: '0 auto' }}>
-                    <HiOutlinePlus size={12} /> Agregar Primera Hora Manual
+                  <button className="btn btn-primary" onClick={() => setIsAddHoursModalOpen(true)} style={{ padding: '4px 12px', fontSize: '0.8rem', height: '30px', width: 'fit-content', margin: '0 auto' }}>
+                    <HiOutlinePlus size={14} /> Agregar Primera Hora Manual
                   </button>
                 </div>
               )}
