@@ -7,8 +7,12 @@ import {
   HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineQrcode,
   HiOutlineUsers, HiOutlineClock, HiOutlineLocationMarker,
   HiOutlineCalendar, HiOutlineX, HiOutlineRefresh, HiOutlineCheck,
-  HiOutlineCheckCircle, HiOutlineExternalLink, HiOutlineDuplicate,
+  HiOutlineCheckCircle, HiOutlineExternalLink, HiOutlineDuplicate, HiOutlineDocumentReport
 } from 'react-icons/hi';
+import { hasPermission } from '../../utils/permissions';
+import { PERMISSIONS } from '../../utils/constants';
+import { useAuth } from '../../hooks/useAuth';
+import ReportModal from '../../components/reports/ReportModal';
 
 const STATUS_LABELS = { DRAFT: 'Borrador', PUBLISHED: 'Publicada', FINISHED: 'Finalizada' };
 const STATUS_COLORS = {
@@ -194,6 +198,7 @@ function QRModal({ activity, onClose, onToggleActive }) {
 function AttendancesModal({ activity, onClose }) {
   const [attendances, setAttendances] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     api.get(`/activities/${activity.id}/attendances`)
@@ -202,12 +207,58 @@ function AttendancesModal({ activity, onClose }) {
       .finally(() => setLoading(false));
   }, [activity.id]);
 
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const params = {
+        type: 'activities',
+        format: 'pdf',
+        fields: 'first_name,last_name,national_id,program_name,hours_earned,scanned_at',
+        activity_id: activity.id
+      };
+
+      const response = await api.get('/reports/download', {
+        params,
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `asistencia_${activity.title.replace(/\s+/g, '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Reporte descargado exitosamente');
+    } catch (err) {
+      console.error(err);
+      toast.error('Error al descargar el reporte');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" style={{ maxWidth: 600, background: 'var(--bg-card)' }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">Asistencias — {activity.title}</h2>
-          <button className="modal-close" onClick={onClose}><HiOutlineX /></button>
+        <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 className="modal-title" style={{ margin: 0 }}>Asistencias — {activity.title}</h2>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {attendances.length > 0 && (
+              <button 
+                className="btn btn-primary" 
+                style={{ padding: '4px 12px', fontSize: '0.8rem', height: 'auto', background: '#ef4444' }}
+                onClick={handleDownload}
+                disabled={downloading}
+              >
+                {downloading ? <span className="spinner" style={{ width: 14, height: 14, borderTopColor: 'white' }}></span> : <HiOutlineDocumentReport size={16} />}
+                <span>PDF</span>
+              </button>
+            )}
+            <button className="modal-close" onClick={onClose} style={{ position: 'relative', top: 0, right: 0 }}><HiOutlineX /></button>
+          </div>
         </div>
         <div className="modal-body">
           {loading ? (
@@ -361,6 +412,8 @@ export default function ActivityManagement() {
   const [filterStatus, setFilterStatus] = useState('');
   const [qrTarget, setQrTarget] = useState(null);
   const [attendTarget, setAttendTarget] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (setHeaderContent) setHeaderContent({
@@ -414,47 +467,63 @@ export default function ActivityManagement() {
 
   return (
     <div className="animate-fade-in">
-      {/* Toolbar */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
-        <select
-          className="form-input"
-          value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value)}
-          style={{ width: 180 }}
-        >
-          <option value="">Todas las actividades</option>
-          <option value="DRAFT">Borradores</option>
-          <option value="PUBLISHED">Publicadas</option>
-          <option value="FINISHED">Finalizadas</option>
-        </select>
-        <div style={{ flex: 1 }} />
-        <button className="btn btn-primary" style={{ width: 'auto' }} onClick={() => navigate('nueva')}>
-          <HiOutlinePlus size={18} /> Nueva Actividad
-        </button>
-      </div>
+      <div className="info-panel">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <h3 style={{ margin: 0 }}>Actividades</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
+            <select
+              className="form-input"
+              value={filterStatus}
+              onChange={e => setFilterStatus(e.target.value)}
+              style={{ width: 160, height: '36px', padding: '0 8px', fontSize: '0.85rem', marginBottom: 0 }}
+            >
+              <option value="">Todas</option>
+              <option value="DRAFT">Borradores</option>
+              <option value="PUBLISHED">Publicadas</option>
+              <option value="FINISHED">Finalizadas</option>
+            </select>
+            {user && hasPermission(user.permissions, PERMISSIONS.REPORT_ACTIVITIES) && (
+              <button 
+                className="btn btn-primary" 
+                style={{ width: 'auto', height: '36px', padding: '0 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                onClick={() => setShowReportModal(true)}
+              >
+                <HiOutlineDocumentReport size={16} /> Reporte
+              </button>
+            )}
+            <button 
+              className="btn btn-primary" 
+              style={{ width: 'auto', height: '36px', padding: '0 12px', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }} 
+              onClick={() => navigate('nueva')}
+            >
+              <HiOutlinePlus size={16} /> Nueva
+            </button>
+          </div>
+        </div>
 
-      {/* Grid */}
-      {loading ? (
-        <div className="page-loading"><div className="page-loading-spinner" /></div>
-      ) : activities.length === 0 ? (
-        <div className="info-panel" style={{ textAlign: 'center', padding: 48 }}>
-          <HiOutlineCalendar size={40} style={{ opacity: 0.2, margin: '0 auto 12px', display: 'block' }} />
-          <p style={{ color: 'var(--text-secondary)' }}>No hay actividades{filterStatus ? ' con ese estado' : ''}. ¡Crea la primera!</p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 18 }}>
-          {activities.map(act => (
-            <ActivityCard
-              key={act.id}
-              activity={act}
-              onEdit={a => navigate(`editar/${a.id}`)}
-              onQR={a => setQrTarget(a)}
-              onAttendances={a => setAttendTarget(a)}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
+        {/* Grid */}
+        {loading ? (
+          <div className="page-loading"><div className="page-loading-spinner" /></div>
+        ) : activities.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 48 }}>
+            <HiOutlineCalendar size={40} style={{ opacity: 0.2, margin: '0 auto 12px', display: 'block' }} />
+            <p style={{ color: 'var(--text-secondary)' }}>No hay actividades{filterStatus ? ' con ese estado' : ''}. ¡Crea la primera!</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(270px, 1fr))', gap: 18 }}>
+            {activities.map(act => (
+              <ActivityCard
+                key={act.id}
+                activity={act}
+                onEdit={a => navigate(`editar/${a.id}`)}
+                onQR={a => setQrTarget(a)}
+                onAttendances={a => setAttendTarget(a)}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Modales */}
       {qrTarget && (
@@ -470,6 +539,7 @@ export default function ActivityManagement() {
           onClose={() => setAttendTarget(null)}
         />
       )}
+      <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} type="activities" />
     </div>
   );
 }

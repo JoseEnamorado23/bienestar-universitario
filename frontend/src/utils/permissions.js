@@ -182,16 +182,7 @@ export function getMenuItems(userPermissions) {
   //   });
   // }
 
-  // Reportes
-  if (hasPermission(userPermissions, PERMISSIONS.SYSTEM_REPORTS)) {
-    items.push({
-      id: 'reports',
-      label: 'Reportes',
-      path: '/dashboard/reportes',
-      icon: HiOutlineDocumentReport,
-      show: true,
-    });
-  }
+  // (Centralized Reports module removed in favor of contextual reports)
 
   // Auditoría
   if (hasPermission(userPermissions, PERMISSIONS.SYSTEM_AUDIT_LOGS)) {
@@ -231,7 +222,6 @@ export function getDashboardConfig(role) {
         quickActions: [
           { label: 'Crear Admin', path: '/dashboard/usuarios', icon: HiOutlineUsers, color: '#00acc9' },
           { label: 'Ver Roles', path: '/dashboard/roles', icon: HiOutlineShieldCheck, color: '#80ba27' },
-          { label: 'Reportes', path: '/dashboard/reportes', icon: HiOutlineDocumentReport, color: '#f093fb' },
           { label: 'Auditoría', path: '/dashboard/auditoria', icon: HiOutlineCog, color: '#4facfe' },
         ],
       };
@@ -246,7 +236,6 @@ export function getDashboardConfig(role) {
           { label: 'Préstamos', path: '/dashboard/prestamos', icon: HiOutlineClipboardList, color: '#00acc9' },
           { label: 'Actividades', path: '/dashboard/actividades', icon: HiOutlineCalendar, color: '#80ba27' },
           { label: 'Inventario', path: '/dashboard/inventario', icon: HiOutlineCube, color: '#f093fb' },
-          { label: 'Reportes', path: '/dashboard/reportes', icon: HiOutlineDocumentReport, color: '#4facfe' },
         ],
       };
     case ROLES.ADMIN_LOANS:

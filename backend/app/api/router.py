@@ -8,6 +8,7 @@ from app.api.v1 import settings
 from app.api.v1 import programs
 from app.api.v1 import activities
 from app.api.v1 import audit
+from app.api.v1 import reports
 
 # Router principal de la API v1
 api_router = APIRouter(prefix="/api/v1")
@@ -22,3 +23,4 @@ api_router.include_router(settings.router, prefix="/settings", tags=["settings"]
 api_router.include_router(programs.router, prefix="/programs", tags=["programs"])
 api_router.include_router(activities.router, prefix="/activities", tags=["activities"])
 api_router.include_router(audit.router)
+api_router.include_router(reports.router, prefix="/reports", tags=["reports"])

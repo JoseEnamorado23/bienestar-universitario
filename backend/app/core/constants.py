@@ -56,8 +56,9 @@ PERMISSIONS = {
     "student:view_hours": "Ver horas sociales",
     
     # Sistema
-    "system:audit_logs": "Ver logs de auditoría",
-    "system:reports": "Generar reportes",
+    "report:students": "Generar reportes de estudiantes",
+    "report:loans": "Generar reportes de préstamos",
+    "report:activities": "Generar reportes de actividades",
 }
 
 # ==========================
@@ -77,14 +78,16 @@ ROLES = {
             "loan:approve", "loan:return", "inventory:manage", "inventory:read",
             "activity:manage", "activity:create", "activity:read:all", "activity:update", 
             "activity:delete", "activity:assign_hours", "activity:approve_hours",
-            "activity:enroll", "system:audit_logs", "system:reports"
+            "activity:enroll", "system:audit_logs", 
+            "report:students", "report:loans", "report:activities"
         ]
     },
     "administrador_prestamos": {
         "description": "Gestión completa de préstamos",
         "permissions": [
             "loan:create", "loan:read:all", "loan:update", "loan:delete",
-            "loan:approve", "loan:return", "inventory:manage", "inventory:read"
+            "loan:approve", "loan:return", "inventory:manage", "inventory:read",
+            "report:loans"
         ]
     },
     "administrador_actividades": {
@@ -92,7 +95,7 @@ ROLES = {
         "permissions": [
             "activity:manage", "activity:create", "activity:read:all", "activity:update",
             "activity:delete", "activity:assign_hours", "activity:approve_hours",
-            "activity:enroll"
+            "activity:enroll", "report:activities"
         ]
     },
     "estudiante": {

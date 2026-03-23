@@ -1,8 +1,7 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/axios';
 import { ROLE_PERMISSIONS } from '../utils/constants';
-
-export const AuthContext = createContext(null);
+import { useState, useEffect, useCallback } from 'react';
+import { AuthContext } from './AuthContextObject';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

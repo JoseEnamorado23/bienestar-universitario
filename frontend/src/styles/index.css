@@ -892,6 +892,22 @@ img {
   }
 }
 
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale,
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
 @keyframes slideInLeft {
   from {
     transform: translateX(-100%);
@@ -1066,6 +1082,23 @@ img {
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+}
+
+.modal-close {
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--bg-glass-hover);
+  color: var(--error);
 }
 
 .modal-body {

@@ -10,6 +10,11 @@ import {
 } from 'react-icons/hi';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { hasPermission } from '../../utils/permissions';
+import { PERMISSIONS } from '../../utils/constants';
+import { useAuth } from '../../hooks/useAuth';
+import ReportModal from '../../components/reports/ReportModal';
+import { HiOutlineDocumentReport } from 'react-icons/hi';
 
 /* ── HELPERS ──────────────────────────────── */
 const formatDecimalHours = (decimal) => {
@@ -329,6 +334,8 @@ export default function StudentManagement() {
   const [sorting, setSorting] = useState({ sort_by: 'id', order: 'desc' });
   
   const [modal, setModal] = useState(null); // { type, student }
+  const [showReportModal, setShowReportModal] = useState(false);
+  const { user } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
 
@@ -426,10 +433,13 @@ export default function StudentManagement() {
       {modal?.type === 'block' && <BlockModal student={modal.student} onClose={() => setModal(null)} onConfirm={handleToggleStatus} />}
       {modal?.type === 'edit' && <EditStudentModal student={modal.student} onClose={() => setModal(null)} onSaved={fetchStudents} />}
       {modal?.type === 'hours' && <AddHoursModal student={modal.student} onClose={() => setModal(null)} onSaved={fetchStudents} />}
+      <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} type="students" />
 
       <div className="info-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>Estudiantes</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>Estudiantes</h3>
+          </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
             {/* Search Bar */}
@@ -538,6 +548,18 @@ export default function StudentManagement() {
                 </div>
               )}
             </div>
+            
+            {/* Report Button */}
+            {user && hasPermission(user.permissions, PERMISSIONS.REPORT_STUDENTS) && (
+              <button 
+                className="btn btn-primary" 
+                style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', width: 'fit-content' }}
+                onClick={() => setShowReportModal(true)}
+              >
+                <HiOutlineDocumentReport size={18} />
+                <span style={{ fontSize: '0.85rem' }}>Reporte</span>
+              </button>
+            )}
 
             {/* Reset Button */}
             {(filters.program_id || filters.status || search || sorting.sort_by !== 'id' || sorting.order !== 'desc') && (

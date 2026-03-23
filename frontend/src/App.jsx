@@ -25,6 +25,7 @@ import ActivityManagement from './pages/activities/ActivityManagement';
 import ActivityForm from './pages/activities/ActivityForm';
 import PublicQRView from './pages/activities/PublicQRView';
 import SocialHours from './pages/hours/SocialHours';
+
 import AuditLog from './pages/users/AuditLog';
 import NotFound from './pages/NotFound';
 
@@ -135,7 +136,7 @@ export default function App() {
               </ProtectedRoute>
             } />
             <Route path="horas" element={<SocialHours />} />
-            <Route path="reportes" element={<PlaceholderPage title="Reportes" />} />
+
             <Route path="auditoria" element={
               <ProtectedRoute requiredPermissions={['system:audit_logs']}>
                 <AuditLog />

@@ -10,6 +10,11 @@ import {
 } from 'react-icons/hi';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { hasPermission } from '../../utils/permissions';
+import { PERMISSIONS } from '../../utils/constants';
+import { useAuth } from '../../hooks/useAuth';
+import ReportModal from '../../components/reports/ReportModal';
+import { HiOutlineDocumentReport } from 'react-icons/hi';
 
 /* ── ACTION BUTTON ────────────────────────── */
 function ActionBtn({ icon, label, colorHex, onClick, isRowHovered, disabled }) {
@@ -196,6 +201,8 @@ export default function LoanManagement() {
   const [rejecting, setRejecting] = useState(false);
 
   const [contactModal, setContactModal] = useState({ open: false, student: null });
+  const [showReportModal, setShowReportModal] = useState(false);
+  const { user } = useAuth();
 
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
@@ -479,6 +486,18 @@ export default function LoanManagement() {
               )}
             </div>
 
+            {/* Report Button */}
+            {user && hasPermission(user.permissions, PERMISSIONS.REPORT_LOANS) && (
+              <button 
+                className="btn btn-primary" 
+                style={{ height: '38px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', padding: '0 12px', fontSize: '0.85rem', width: 'fit-content' }}
+                onClick={() => setShowReportModal(true)}
+              >
+                <HiOutlineDocumentReport style={{ fontSize: '1.1rem' }} />
+                <span style={{ whiteSpace: 'nowrap' }}>Reporte</span>
+              </button>
+            )}
+
             {/* Add New Loan Button */}
             <button 
               className="btn btn-primary" 
@@ -597,6 +616,7 @@ export default function LoanManagement() {
         )}
       </div>
 
+      <ReportModal isOpen={showReportModal} onClose={() => setShowReportModal(false)} type="loans" />
       <RejectModal
         open={rejectModal.open}
         onClose={() => setRejectModal({ open: false, loanId: null })}
