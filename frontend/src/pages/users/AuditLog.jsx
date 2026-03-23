@@ -20,6 +20,13 @@ const ACTION_META = {
   LOAN_APPROVED:       { label: 'Préstamo Aprobado',color: '#80ba27', bg: 'rgba(128,186,39,0.12)' },
   LOAN_RETURNED:       { label: 'Préstamo Devuelto',color: '#00acc9', bg: 'rgba(0,172,201,0.12)' },
   LOAN_REJECTED:       { label: 'Préstamo Rechazado',color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+  ACTIVITY_CREATED:    { label: 'Actividad Creada', color: '#80ba27', bg: 'rgba(128,186,39,0.12)' },
+  ACTIVITY_UPDATED:    { label: 'Actividad Editada', color: '#f093fb', bg: 'rgba(240,147,251,0.12)' },
+  ACTIVITY_DELETED:    { label: 'Actividad Borrada', color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+  ACTIVITY_ATTENDANCE: { label: 'Asistencia Reg.', color: '#00acc9', bg: 'rgba(0,172,201,0.12)' },
+  ITEM_CREATED:        { label: 'Implemento Creado',color: '#80ba27', bg: 'rgba(128,186,39,0.12)' },
+  ITEM_UPDATED:        { label: 'Implemento Editado',color: '#f093fb', bg: 'rgba(240,147,251,0.12)' },
+  ITEM_DELETED:        { label: 'Implemento Borrado',color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
 };
 
 function ActionBadge({ action }) {

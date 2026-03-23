@@ -6,6 +6,7 @@ from app.api.dependencies import get_current_user, require_permissions
 from app.models.user import User
 from app.schemas.inventory import ItemCreate, ItemUpdate, ItemResponse
 from app.services.inventory_service import InventoryService
+from app.services.audit_service import AuditService
 
 router = APIRouter()
 
@@ -34,6 +35,11 @@ def create_item(
     Create new inventory item. Require INVENTORY_MANAGE permission.
     """
     item = InventoryService.create_item(db=db, item_in=item_in)
+    AuditService.log_action(
+        db, action="ITEM_CREATED", entity_type="inventory", entity_id=item.id,
+        user_id=current_user.id,
+        details={"name": item.name, "category": item.category, "total_stock": item.total_stock}
+    )
     return item
 
 @router.put("/{id}", response_model=ItemResponse)
@@ -48,6 +54,11 @@ def update_item(
     Update an inventory item. Require INVENTORY_MANAGE permission.
     """
     item = InventoryService.update_item(db=db, item_id=id, item_in=item_in)
+    AuditService.log_action(
+        db, action="ITEM_UPDATED", entity_type="inventory", entity_id=id,
+        user_id=current_user.id,
+        details={"name": item.name, "updated_fields": item_in.dict(exclude_unset=True)}
+    )
     return item
 
 @router.delete("/{id}", response_model=ItemResponse)
@@ -61,4 +72,9 @@ def delete_item(
     Delete (soft) an inventory item. Require INVENTORY_MANAGE permission.
     """
     item = InventoryService.delete_item(db=db, item_id=id)
+    AuditService.log_action(
+        db, action="ITEM_DELETED", entity_type="inventory", entity_id=id,
+        user_id=current_user.id,
+        details={"name": item.name}
+    )
     return item

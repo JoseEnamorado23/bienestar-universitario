@@ -18,6 +18,7 @@ from app.schemas.activity import (
     QRRotateResponse,
 )
 from app.services.activity_service import ActivityService
+from app.services.audit_service import AuditService
 
 router = APIRouter()
 
@@ -50,6 +51,11 @@ def create_activity(
 ) -> Any:
     """Crear una nueva actividad."""
     act = ActivityService.create_activity(db, admin_id=current_user.id, data=data)
+    AuditService.log_action(
+        db, action="ACTIVITY_CREATED", entity_type="activity", entity_id=act.id,
+        user_id=current_user.id,
+        details={"title": act.title, "date": str(act.date)}
+    )
     return _enrich_admin(act, db)
 
 
@@ -63,6 +69,11 @@ def update_activity(
 ) -> Any:
     """Editar una actividad existente."""
     act = ActivityService.update_activity(db, activity_id=activity_id, data=data)
+    AuditService.log_action(
+        db, action="ACTIVITY_UPDATED", entity_type="activity", entity_id=activity_id,
+        user_id=current_user.id,
+        details={"title": act.title, "updated_fields": data.dict(exclude_unset=True)}
+    )
     return _enrich_admin(act, db)
 
 
@@ -75,6 +86,11 @@ def delete_activity(
 ) -> Any:
     """Eliminar (soft-delete) una actividad."""
     act = ActivityService.delete_activity(db, activity_id=activity_id)
+    AuditService.log_action(
+        db, action="ACTIVITY_DELETED", entity_type="activity", entity_id=activity_id,
+        user_id=current_user.id,
+        details={"title": act.title}
+    )
     return _enrich_admin(act, db)
 
 
@@ -169,13 +185,24 @@ def attend_activity(
     if not student:
         raise HTTPException(status_code=404, detail="Perfil de estudiante no encontrado.")
 
-    return ActivityService.register_attendance(
+    attendance = ActivityService.register_attendance(
         db=db,
         token=body.token,
         student_id=student.id,
         latitude=body.latitude,
         longitude=body.longitude,
     )
+    # Log audit for attendance
+    AuditService.log_action(
+        db, action="ACTIVITY_ATTENDANCE", entity_type="activity", 
+        entity_id=attendance.activity_id,
+        user_id=current_user.id,
+        details={
+            "activity_name": attendance.activity.title if attendance.activity else "Unknown",
+            "hours_earned": float(attendance.hours_earned)
+        }
+    )
+    return attendance
 
 
 @router.get("/my-activities/history", response_model=List[AttendanceResponse])
