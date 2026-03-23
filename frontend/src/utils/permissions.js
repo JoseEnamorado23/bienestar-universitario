@@ -126,8 +126,8 @@ export function getMenuItems(userPermissions) {
       
       items.push({
         id: 'loans-module',
-        label: 'Horas',
-        icon: HiOutlineClock,
+        label: 'Préstamos',
+        icon: HiOutlineClipboardList,
         path: isStudentOnly ? '/dashboard/horas' : undefined,
         show: true,
         children: isStudentOnly ? undefined : loanChildren
