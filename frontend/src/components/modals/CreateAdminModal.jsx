@@ -93,7 +93,7 @@ export default function CreateAdminModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body p-4">
-          <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+          <div className="form-grid-compact" style={{ marginBottom: '1rem' }}>
             <div className="form-group mb-0">
               <label>Nombre</label>
               <input

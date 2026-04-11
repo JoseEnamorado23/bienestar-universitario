@@ -517,6 +517,16 @@ img {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  flex: 1;
+}
+
+.header-center {
+  flex: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-burger {
@@ -553,6 +563,8 @@ img {
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  justify-content: flex-end;
+  flex: 1;
 }
 
 .header-badge {
@@ -1000,6 +1012,21 @@ img {
 }
 
 @media (max-width: 768px) {
+  .header {
+    padding: 0 var(--space-md);
+  }
+
+  .header-title h1 {
+    font-size: 1rem;
+  }
+
+  .header-title p {
+    display: none; /* Hide subtitle on mobile for space */
+  }
+
+  .header-right {
+    gap: var(--space-sm);
+  }
   .stats-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1028,6 +1055,14 @@ img {
 
   .quick-actions-grid {
     grid-template-columns: 1fr;
+  }
+
+  .header-left, .header-right {
+    flex: none;
+  }
+
+  .header-center {
+    flex: 1;
   }
 }
 
@@ -1115,10 +1150,269 @@ img {
   margin-bottom: 1.5rem;
 }
 
+@media (max-width: 640px) {
+  .form-grid-compact {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* General Layout Grids */
+.responsive-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .responsive-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.responsive-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .responsive-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .responsive-grid-3 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 .modal-footer {
   padding: var(--space-lg);
   border-top: 1px solid var(--border-color);
   display: flex;
   justify-content: flex-end;
   gap: var(--space-md);
+}
+
+/* =============================================
+   RESPONSIVE TABLES (MOBILE CARDS)
+   ============================================= */
+@media (max-width: 768px) {
+  table.responsive-table {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  table.responsive-table thead,
+  table.responsive-table th {
+    display: none; /* Hide header visually but not from screen readers if we used aria, here plain display:none is ok */
+  }
+
+  table.responsive-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  table.responsive-table tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  table.responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08); /* light subtle border */
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  table.responsive-table td:last-child {
+    border-bottom: none;
+    justify-content: flex-end;
+    margin-top: var(--space-sm);
+    padding-bottom: 0;
+  }
+
+  /* Insert data-label before the cell value */
+  table.responsive-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-align: left;
+    margin-right: var(--space-md);
+    flex-shrink: 0;
+  }
+
+  /* Hide empty cells on mobile if no data label */
+  table.responsive-table td:empty {
+    display: none;
+  }
+}
+
+/* =============================================
+   HEADER RESPONSIVE TYPOGRAPHY
+   ============================================= */
+.header-main-title {
+  font-size: 1.2rem;
+}
+.header-main-subtitle {
+  font-size: 0.85rem;
+}
+
+/* =============================================
+   MOBILE UTILITIES
+   ============================================= */
+.show-on-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .header-main-title {
+    font-size: 0.95rem; /* smaller */
+  }
+  .header-main-subtitle {
+    font-size: 0.7rem;  /* smaller */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px; /* Prevent long subtitles from pushing flex items off screen */
+  }
+  .header {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .show-on-mobile {
+    display: flex !important;
+  }
+
+  /* Reset main content padding for mobile to gain space */
+  .main-content {
+    padding: 0 !important;
+  }
+  
+  .page-content {
+    padding: var(--space-xs) !important;
+  }
+
+  .info-panel {
+    padding: var(--space-sm) !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  /* Edge-to-edge list wrapper styling on mobile */
+  .profile-list-wrapper {
+    margin: 0 calc(-1 * var(--space-sm)); 
+  }
+
+  /* Mobile Controls: FAB */
+  .mobile-fab {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    z-index: 100 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+  
+  /* Hide the text inside FAB */
+  .mobile-fab > span:not(.icon) {
+    display: none !important;
+  }
+
+  .mobile-fab > svg {
+    width: 24px !important;
+    height: 24px !important;
+    margin: 0 !important;
+    flex-shrink: 0;
+  }
+
+  /* Full-width Search wrapper by default on mobile */
+  .mobile-search-wrapper {
+    width: 100% !important;
+    flex: 1 1 auto !important;
+    overflow: hidden;
+  }
+  
+  .mobile-search-wrapper:focus-within {
+    z-index: 50;
+  }
+
+  /* Icon-only filters and sorting */
+  .mobile-icon-only {
+    width: 38px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    flex: 0 0 38px !important;
+  }
+  
+  .mobile-icon-only > span,
+  .mobile-icon-only > svg:last-child {
+    display: none !important; /* hide the text and the chevron */
+  }
+
+  /* Specific style for Administrator List as Profile List */
+  table.responsive-table.profile-list {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  table.responsive-table.profile-list tr {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: none;
+    background: transparent;
+  }
+
+  table.responsive-table.profile-list td {
+    display: flex;
+    border: none;
+    padding: 0;
+    text-align: left;
+    background: transparent;
+  }
+
+  table.responsive-table.profile-list td::before {
+    display: none; /* No labels in profile list mode */
+  }
 }

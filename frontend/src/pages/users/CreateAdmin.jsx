@@ -93,7 +93,7 @@ export default function CreateAdmin() {
 
       <div className="info-panel">
         <form onSubmit={handleSubmit}>
-          <div className="form-grid-compact" style={{ gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+          <div className="form-grid-compact">
             <div className="form-group mb-0">
               <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Nombre</label>
               <input

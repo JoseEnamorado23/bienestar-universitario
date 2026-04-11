@@ -55,21 +55,21 @@ export default function Header({ title, subtitle, onToggleSidebar, onOpenSetting
   if (!user) return null;
 
   return (
-    <header className="header" style={{ display: 'grid', gridTemplateColumns: '80px 1fr 200px', alignItems: 'center' }}>
+    <header className="header">
       <div className="header-left">
         <button className="header-burger" onClick={onToggleSidebar}>
           <HiOutlineMenuAlt2 />
         </button>
       </div>
 
-      <div className="header-center" style={{ textAlign: 'center' }}>
+      <div className="header-center">
         <div className="header-title">
-          <h1 style={{ color: title === 'Tablero Kanban' ? 'var(--accent-primary)' : 'inherit', margin: 0, fontSize: '1.2rem' }}>{title || 'Sistema de Bienestar'}</h1>
-          <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8 }}>{subtitle || 'Universidad — Panel de Control'}</p>
+          <h1 className="header-main-title" style={{ color: title === 'Tablero Kanban' ? 'var(--accent-primary)' : 'inherit', margin: 0 }}>{title || 'Sistema de Bienestar'}</h1>
+          <p className="header-main-subtitle" style={{ margin: 0, opacity: 0.8 }}>{subtitle || 'Universidad — Panel de Control'}</p>
         </div>
       </div>
 
-      <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'flex-end' }}>
+      <div className="header-right">
         <button 
           onClick={onOpenSettings}
           style={{ 

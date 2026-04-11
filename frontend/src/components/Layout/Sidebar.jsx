@@ -121,6 +121,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewLoan }) {
             );
           })}
         </nav>
+
       </aside>
     </>
   );

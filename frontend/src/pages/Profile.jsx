@@ -51,7 +51,7 @@ export default function Profile() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+      <div className="responsive-grid-2" style={{ gap: '2rem' }}>
         {/* Info Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div className="info-panel" style={{ margin: 0 }}>

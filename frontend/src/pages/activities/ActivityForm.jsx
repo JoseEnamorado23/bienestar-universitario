@@ -148,7 +148,7 @@ export default function ActivityForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="info-panel" style={{ padding: 32 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           
           {/* Título Principal */}
           <div className="form-group">
@@ -176,7 +176,7 @@ export default function ActivityForm() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div className="responsive-grid-2" style={{ gap: 24 }}>
             <div className="form-group">
               <label className="form-label"><HiOutlineLocationMarker size={14} /> LUGAR / PUNTO DE ENCUENTRO</label>
               <input className="form-input" value={form.location}
@@ -189,7 +189,7 @@ export default function ActivityForm() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          <div className="responsive-grid-2" style={{ gap: 24 }}>
             <div className="form-group">
               <label className="form-label"><HiOutlineClock size={14} /> HORAS A OTORGAR</label>
               <input className="form-input" type="number" min={0.5} max={40} step={0.5}
@@ -211,7 +211,7 @@ export default function ActivityForm() {
           {/* Tipo de QR - Layout más visual */}
           <div className="form-group" style={{ background: 'var(--bg-glass)', padding: 20, borderRadius: 12, border: '1px solid var(--border-color)' }}>
             <label className="form-label" style={{ marginBottom: 16 }}>CONFIGURACIÓN DEL CÓDIGO QR</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+            <div className="responsive-grid-3" style={{ gap: 12 }}>
               {Object.keys(QR_LABELS).map(type => (
                 <button 
                   key={type} 

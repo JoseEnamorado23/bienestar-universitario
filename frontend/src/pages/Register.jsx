@@ -96,7 +96,7 @@ export default function Register() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
+          <form onSubmit={handleSubmit} className="responsive-grid-2" style={{ gap: '0 1rem' }}>
             <div className="form-group">
               <label htmlFor="first_name">Nombres</label>
               <input
