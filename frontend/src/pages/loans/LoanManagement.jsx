@@ -103,21 +103,21 @@ function LoanRow({ loan, onApprove, onReject, onReturn, onContact }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Estudiante" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>{loan.student.first_name} {loan.student.last_name}</span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>CC: {loan.student.document_id}</span>
         </div>
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Implemento" style={{ padding: '0.85rem 1rem' }}>
         <span style={{ fontWeight: 500, fontSize: '0.85rem' }}>{loan.item.name}</span>
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Programa" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
           {loan.student.program_name || '—'}
         </div>
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Estado" style={{ padding: '0.85rem 1rem' }}>
         <span style={{ 
           padding: '2px 10px', 
           borderRadius: '20px', 
@@ -131,16 +131,16 @@ function LoanRow({ loan, onApprove, onReject, onReturn, onContact }) {
           {status.label}
         </span>
       </td>
-      <td style={{ padding: '0.85rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+      <td data-label="Inicio" style={{ padding: '0.85rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         {formatDate(loan.start_time)}
       </td>
-      <td style={{ padding: '0.85rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+      <td data-label="Límite / Fin" style={{ padding: '0.85rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         {loan.status === 'DEVUELTO' ? formatDate(loan.returned_time) : formatDate(loan.expected_return_time)}
       </td>
-      <td style={{ padding: '0.85rem 1rem', fontWeight: 600, color: loan.hours_earned > 0 ? '#80ba27' : 'var(--text-muted)', fontSize: '0.875rem' }}>
+      <td data-label="Horas" style={{ padding: '0.85rem 1rem', fontWeight: 600, color: loan.hours_earned > 0 ? '#80ba27' : 'var(--text-muted)', fontSize: '0.875rem' }}>
         {loan.hours_earned > 0 ? `+${loan.formatted_hours_earned || loan.hours_earned}` : '—'}
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Acciones" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <ActionBtn 
             icon={<HiOutlinePhone />} 
@@ -211,12 +211,10 @@ export default function LoanManagement() {
   const sortRef = useRef(null);
 
   useEffect(() => {
-    if (setHeaderContent) {
-      setHeaderContent({
-        title: 'Gestión de Préstamos',
-        subtitle: 'Audita y gestiona las solicitudes de implementos deportivos y académicos.'
-      });
-    }
+    setHeaderContent({ 
+      title: 'Préstamos', 
+      subtitle: 'Control de implementos deportivos' 
+    });
   }, [setHeaderContent]);
 
   // Close dropdowns when clicking outside
@@ -272,7 +270,7 @@ export default function LoanManagement() {
   // Establish WebSocket connection for real-time updates
   useEffect(() => {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.hostname === 'localhost' ? 'localhost:8000' : window.location.host;
+    const host = window.location.hostname === 'localhost' ? 'localhost:8000' : `${window.location.hostname}:8000`;
     const wsUrl = `${protocol}//${host}/ws`;
     
     let socket;
@@ -359,11 +357,10 @@ export default function LoanManagement() {
       {/* Header with Search & Filters Toggle */}
       <div className="info-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>Préstamos</h3>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
             {/* Search Bar */}
-            <div style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
+            <div className="mobile-search-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
               <HiOutlineSearch style={{ position: 'absolute', left: '12px', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
               <input
                 type="text"
@@ -378,7 +375,7 @@ export default function LoanManagement() {
             {/* Filters Dropdown */}
             <div style={{ position: 'relative' }} ref={filterRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)', background: (filters.program_id || filters.status || filters.time) ? 'var(--accent-primary)11' : 'transparent' }}
                 onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
               >
@@ -441,7 +438,7 @@ export default function LoanManagement() {
             {/* Sort Dropdown */}
             <div style={{ position: 'relative' }} ref={sortRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)' }}
                 onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
               >
@@ -537,7 +534,7 @@ export default function LoanManagement() {
         ) : (
           <>
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
                     {['Estudiante', 'Implemento', 'Programa', 'Estado', 'Inicio', 'Límite / Fin', 'Horas', 'Acciones'].map(h => (

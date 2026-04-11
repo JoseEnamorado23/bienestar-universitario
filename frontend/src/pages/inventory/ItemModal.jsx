@@ -25,7 +25,7 @@ export default function ItemModal({ isOpen, onClose, selectedItem, onSave }) {
           total_quantity: selectedItem.total_quantity,
           image_url: selectedItem.image_url || ''
         });
-        setPreviewUrl(selectedItem.image_url ? `http://localhost:8000${selectedItem.image_url}` : ''); // Fallback for local testing
+        setPreviewUrl(selectedItem.image_url ? `http://${window.location.hostname}:8000${selectedItem.image_url}` : ''); // Fallback for local testing
       } else {
         setFormData({
           name: '',

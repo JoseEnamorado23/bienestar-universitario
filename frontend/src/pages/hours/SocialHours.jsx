@@ -205,7 +205,7 @@ export default function SocialHours() {
               {expandedSections.loans && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
                       <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                           <th style={{ padding: '10px 4px', fontWeight: 500 }}>Implemento</th>
@@ -218,19 +218,19 @@ export default function SocialHours() {
                       <tbody>
                         {loans.map(loan => (
                           <tr key={loan.id} style={{ borderBottom: '1px solid rgba(0,0,0,0.02)' }}>
-                            <td style={{ padding: '10px 4px' }}>{loan.item_name}</td>
-                            <td style={{ padding: '10px 4px' }}>
+                            <td data-label="Implemento" style={{ padding: '10px 4px' }}>{loan.item_name}</td>
+                            <td data-label="Estado" style={{ padding: '10px 4px' }}>
                               <span style={{ fontSize: '0.7rem', padding: '1px 8px', borderRadius: '10px', background: loan.status === 'DEVUELTO' ? 'rgba(128,186,39,0.1)' : 'rgba(0,172,201,0.1)', color: loan.status === 'DEVUELTO' ? '#80ba27' : '#00acc9' }}>
                                 {loan.status}
                               </span>
                             </td>
-                            <td style={{ padding: '10px 4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                            <td data-label="Inicio" style={{ padding: '10px 4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                               {loan.start_time ? new Date(loan.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '—'}
                             </td>
-                            <td style={{ padding: '10px 4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                            <td data-label="Devolución" style={{ padding: '10px 4px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                               {loan.returned_time ? new Date(loan.returned_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) : '—'}
                             </td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(loan.hours_earned)}</td>
+                            <td data-label="Horas" style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(loan.hours_earned)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -260,7 +260,7 @@ export default function SocialHours() {
               {expandedSections.activities && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
                       <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                           <th style={{ padding: '10px 4px', fontWeight: 500 }}>Actividad</th>
@@ -271,9 +271,9 @@ export default function SocialHours() {
                       <tbody>
                         {activities.map(act => (
                           <tr key={act.id} style={{ borderBottom: '1px solid rgba(0,0,0,0.02)' }}>
-                            <td style={{ padding: '10px 4px' }}>{act.activity_name}</td>
-                            <td style={{ padding: '10px 4px' }}>{new Date(act.scanned_at || act.date).toLocaleDateString()}</td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(act.hours_earned)}</td>
+                            <td data-label="Actividad" style={{ padding: '10px 4px' }}>{act.activity_name}</td>
+                            <td data-label="Fecha" style={{ padding: '10px 4px' }}>{new Date(act.scanned_at || act.date).toLocaleDateString()}</td>
+                            <td data-label="Horas" style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(act.hours_earned)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -312,7 +312,7 @@ export default function SocialHours() {
               {expandedSections.additional && hasAdditional && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
                       <thead>
                         <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                           <th style={{ padding: '10px 4px', fontWeight: 500 }}>Motivo</th>
@@ -323,9 +323,9 @@ export default function SocialHours() {
                       <tbody>
                         {additionalHours.map(record => (
                           <tr key={record.id} style={{ borderBottom: '1px solid rgba(0,0,0,0.02)' }}>
-                            <td style={{ padding: '10px 4px' }}>{record.reason}</td>
-                            <td style={{ padding: '10px 4px' }}>{new Date(record.date_granted).toLocaleDateString()}</td>
-                            <td style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(record.hours)}</td>
+                            <td data-label="Motivo" style={{ padding: '10px 4px' }}>{record.reason}</td>
+                            <td data-label="Fecha" style={{ padding: '10px 4px' }}>{new Date(record.date_granted).toLocaleDateString()}</td>
+                            <td data-label="Horas" style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 600 }}>{formatDecimalHours(record.hours)}</td>
                           </tr>
                         ))}
                       </tbody>

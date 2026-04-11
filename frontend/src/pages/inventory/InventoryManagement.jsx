@@ -85,7 +85,7 @@ function ItemRow({ item, onEdit, onStatusChange }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Implemento" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ 
             width: '44px', 
@@ -100,7 +100,7 @@ function ItemRow({ item, onEdit, onStatusChange }) {
             boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
           }}>
             {item.image_url ? (
-              <img src={`http://localhost:8000${item.image_url}`} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={`http://${window.location.hostname}:8000${item.image_url}`} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <HiOutlinePhotograph size={22} color="var(--text-muted)" />
             )}
@@ -115,7 +115,7 @@ function ItemRow({ item, onEdit, onStatusChange }) {
           </div>
         </div>
       </td>
-      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+      <td data-label="Disponible" style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
         <span style={{ 
           fontWeight: 700, 
           fontSize: '1.1rem', 
@@ -127,10 +127,10 @@ function ItemRow({ item, onEdit, onStatusChange }) {
           {item.available_quantity}
         </span>
       </td>
-      <td style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600, textAlign: 'center' }}>
+      <td data-label="Total" style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600, textAlign: 'center' }}>
         {item.total_quantity}
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Estado" style={{ padding: '0.85rem 1rem' }}>
         <span style={{ 
           fontSize: '0.7rem', 
           padding: '3px 10px', 
@@ -145,7 +145,7 @@ function ItemRow({ item, onEdit, onStatusChange }) {
           {item.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
         </span>
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td data-label="Acciones" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
           <ActionBtn 
             icon={<HiOutlinePencilAlt />} 
@@ -362,7 +362,7 @@ export default function InventoryManagement() {
 
         {/* Table Content */}
         <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Implemento</th>
