@@ -177,7 +177,7 @@ export default function AuditLog() {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
+            <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                   <th style={{ padding: '10px 8px', fontWeight: 500 }}>Fecha / Hora</th>
@@ -196,10 +196,10 @@ export default function AuditLog() {
                       style={{ borderBottom: '1px solid rgba(0,0,0,0.03)', cursor: log.details ? 'pointer' : 'default' }}
                       onClick={() => log.details && setExpandedId(expandedId === log.id ? null : log.id)}
                     >
-                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                      <td data-label="Fecha / Hora" style={{ padding: '10px 8px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                         {formatDate(log.created_at)}
                       </td>
-                      <td style={{ padding: '10px 8px' }}>
+                      <td data-label="Usuario" style={{ padding: '10px 8px' }}>
                         {log.user ? (
                           <div>
                             <div style={{ fontWeight: 500 }}>{log.user.first_name} {log.user.last_name}</div>
@@ -209,8 +209,8 @@ export default function AuditLog() {
                           <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Sistema</span>
                         )}
                       </td>
-                      <td style={{ padding: '10px 8px' }}><ActionBadge action={log.action} /></td>
-                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>
+                      <td data-label="Acción" style={{ padding: '10px 8px' }}><ActionBadge action={log.action} /></td>
+                      <td data-label="Entidad" style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>
                         {log.entity_type ? (
                           <span>
                             <span style={{ textTransform: 'capitalize' }}>{log.entity_type}</span>
@@ -218,10 +218,10 @@ export default function AuditLog() {
                           </span>
                         ) : '—'}
                       </td>
-                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontFamily: 'monospace' }}>
+                      <td data-label="IP" style={{ padding: '10px 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontFamily: 'monospace' }}>
                         {log.ip_address || '—'}
                       </td>
-                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
+                      <td data-label="Detalles" style={{ padding: '10px 8px', color: 'var(--text-secondary)', fontSize: '0.78rem' }}>
                         {log.details ? (
                           <span style={{ color: '#4facfe', cursor: 'pointer' }}>
                             {expandedId === log.id ? '▲ ocultar' : '▼ ver'}

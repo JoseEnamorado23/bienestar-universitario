@@ -64,35 +64,141 @@ function ActionBtn({ icon, label, colorHex, onClick, isRowHovered }) {
   );
 }
 
+/* ── MOBILE ADMIN DETAILS MODAL ──────────────── */
+function MobileAdminDetailsModal({ admin, currentUser, onClose, onAction }) {
+  if (!admin) return null;
+
+  return (
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--bg-primary)', zIndex: 9999, overflowY: 'auto' }}>
+      <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--bg-card)' }}>
+        <button onClick={onClose} className="btn btn-ghost" style={{ width: 'auto', padding: '8px' }}>
+          <HiOutlineChevronLeft size={24} />
+        </button>
+        <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Perfil de Administrador</h2>
+      </div>
+      <div style={{ padding: '20px' }}>
+         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#00acc9', color: '#fff', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px auto' }}>
+              {admin.first_name[0]}{admin.last_name[0]}
+           </div>
+           <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{admin.first_name} {admin.last_name}</h3>
+           <p style={{ margin: '5px 0 10px 0', color: 'var(--text-secondary)' }}>{admin.email}</p>
+           <span className={`header-badge role-${admin.role_name}`}>{admin.role_name}</span>
+         </div>
+         
+         <div className="info-panel" style={{ padding: '20px', marginBottom: '24px' }}>
+           <div style={{ marginBottom: '12px' }}>
+             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>CÉDULA</p>
+             <p style={{ margin: '2px 0 0 0' }}>{admin.national_id || '—'}</p>
+           </div>
+           <div style={{ marginBottom: '12px' }}>
+             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>ESTADO</p>
+             <div style={{ margin: '2px 0 0 0' }}>
+               {admin.status === 'ACTIVE' ? (
+                 <span style={{ color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
+                   <HiOutlineCheckCircle /> Activo
+                 </span>
+               ) : admin.status === 'INACTIVE' ? (
+                 <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
+                   <HiOutlineXCircle /> Pendiente
+                 </span>
+               ) : (
+                 <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
+                   <HiOutlineXCircle /> Suspendido
+                 </span>
+               )}
+             </div>
+           </div>
+           <div>
+             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>CREADO EL</p>
+             <p style={{ margin: '2px 0 0 0' }}>{new Date(admin.created_at).toLocaleDateString()}</p>
+           </div>
+         </div>
+
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+           <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase' }}>Acciones Disponibles</h4>
+           <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--border-color)' }} onClick={() => onAction('roles', admin)}>
+             <HiOutlineShieldCheck style={{ color: '#a78bfa' }} size={18} /> Gestionar Permisos
+           </button>
+           <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--border-color)' }} onClick={() => onAction('edit', admin)}>
+             <HiOutlinePencil style={{ color: '#00acc9' }} size={18} /> Editar Información
+           </button>
+           {admin.id !== currentUser.id && (
+             admin.status === 'SUSPENDED' ? (
+               <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid #4ade8055', color: '#4ade80' }} onClick={() => onAction('activate', admin)}>
+                 <HiOutlineCheckCircle size={18} /> Activar Administrador
+               </button>
+             ) : (
+               <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid #f8717155', color: '#f87171' }} onClick={() => onAction('suspend', admin)}>
+                 <HiOutlineTrash size={18} /> Suspender Administrador
+               </button>
+             )
+           )}
+         </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── USER ROW ─────────────────────────────── */
-function UserRow({ admin, currentUser, onAction }) {
+function UserRow({ admin, currentUser, onAction, onRowClick }) {
   const [isHovered, setIsHovered] = useState(false);
+  const initials = (admin.first_name[0] + (admin.last_name ? admin.last_name[0] : '')).toUpperCase();
 
   return (
     <tr 
       style={{ 
         borderBottom: '1px solid rgba(0,0,0,0.05)', 
         background: isHovered ? 'var(--bg-glass)' : 'transparent', 
-        transition: 'background 0.2s ease' 
+        transition: 'background 0.2s ease',
+        cursor: 'pointer' 
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        if (e.target.closest('button')) return;
+        onRowClick && onRowClick(admin);
+      }}
     >
-      <td style={{ padding: '0.85rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>
+      <td className="hide-on-mobile" data-label="Cédula" style={{ padding: '0.85rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>
         {admin.national_id || '—'}
       </td>
-      <td style={{ padding: '0.85rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>
-        {admin.first_name} {admin.last_name}
+      <td data-label="Nombre / Apellido" style={{ padding: '0.85rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+          {/* Avatar for mobile/list view */}
+          <div className="show-on-mobile" style={{ 
+            width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-primary)', 
+            color: '#fff', fontSize: '0.9rem', fontWeight: 700, display: 'flex', 
+            alignItems: 'center', justifyContent: 'center', flexShrink: 0 
+          }}>
+            {initials}
+          </div>
+          
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {admin.first_name} {admin.last_name}
+              </span>
+              <HiOutlineChevronRight className="show-on-mobile" style={{ color: 'var(--text-muted)', flexShrink: 0 }} size={18} />
+            </div>
+            {/* Show role inside the name cell for mobile */}
+            <div className="show-on-mobile" style={{ marginTop: '2px' }}>
+               <span className={`header-badge role-${admin.role_name}`} style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
+                {admin.role_name}
+              </span>
+            </div>
+          </div>
+        </div>
       </td>
-      <td style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+      <td className="hide-on-mobile" data-label="Correo" style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
         {admin.email}
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td className="hide-on-mobile" data-label="Rol" style={{ padding: '0.85rem 1rem' }}>
         <span className={`header-badge role-${admin.role_name}`} style={{ fontSize: '0.7rem', padding: '3px 10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {admin.role_name}
         </span>
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td className="hide-on-mobile" data-label="Estado" style={{ padding: '0.85rem 1rem' }}>
         {admin.status === 'ACTIVE' ? (
           <span style={{ color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem' }}>
             <HiOutlineCheckCircle /> Activo
@@ -107,10 +213,10 @@ function UserRow({ admin, currentUser, onAction }) {
           </span>
         )}
       </td>
-      <td style={{ padding: '0.85rem 1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+      <td className="hide-on-mobile" data-label="Creado" style={{ padding: '0.85rem 1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
         {new Date(admin.created_at).toLocaleDateString()}
       </td>
-      <td style={{ padding: '0.85rem 1rem' }}>
+      <td className="hide-on-mobile" data-label="Acciones" style={{ padding: '0.85rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <ActionBtn 
             icon={<HiOutlineShieldCheck />} 
@@ -171,17 +277,16 @@ export default function UserManagement() {
   const [showSort, setShowSort] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [selectedMobileAdmin, setSelectedMobileAdmin] = useState(null);
   
   const filterRef = useRef(null);
   const sortRef = useRef(null);
 
   useEffect(() => {
-    if (setHeaderContent) {
-      setHeaderContent({
-        title: 'Gestión de Administradores',
-        subtitle: 'Crea y gestiona los administradores del sistema.'
-      });
-    }
+    setHeaderContent({ 
+      title: 'Administradores', 
+      subtitle: 'Control de usuarios y permisos' 
+    });
   }, [setHeaderContent]);
 
   // Close dropdowns when clicking outside
@@ -265,15 +370,21 @@ export default function UserManagement() {
     }
   };
 
+  const handleRowClick = (admin) => {
+    // Only open the mobile modal if screen is small
+    if (window.innerWidth <= 768) {
+      setSelectedMobileAdmin(admin);
+    }
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="info-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>Administradores</h3>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
             {/* Search Bar */}
-            <div style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
+            <div className="mobile-search-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
               <HiOutlineSearch style={{ position: 'absolute', left: '12px', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
               <input
                 type="text"
@@ -288,7 +399,7 @@ export default function UserManagement() {
             {/* Filters Dropdown */}
             <div style={{ position: 'relative' }} ref={filterRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)', background: filters.role_id || filters.status ? 'var(--accent-primary)11' : 'transparent' }}
                 onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
               >
@@ -335,7 +446,7 @@ export default function UserManagement() {
             {/* Sort Dropdown */}
             <div style={{ position: 'relative' }} ref={sortRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)' }}
                 onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
               >
@@ -384,10 +495,10 @@ export default function UserManagement() {
 
             <Link 
               to="/dashboard/crear-admin"
-              className="btn btn-primary" 
+              className="btn btn-primary mobile-fab" 
               style={{ height: '38px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', padding: '0 10px', fontSize: '0.8rem', width: 'fit-content' }}
             >
-              <HiOutlineUserAdd style={{ fontSize: '1rem' }} />
+              <HiOutlineUserAdd style={{ fontSize: '1.2rem' }} />
               <span style={{ whiteSpace: 'nowrap' }}>Nuevo Admin</span>
             </Link>
 
@@ -418,8 +529,8 @@ export default function UserManagement() {
           </div>
         ) : (
           <>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div className="profile-list-wrapper" style={{ overflowX: 'auto' }}>
+              <table className="responsive-table profile-list" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
                     {['Cédula', 'Nombre / Apellido', 'Correo', 'Rol', 'Estado', 'Creado', 'Acciones'].map(h => (
@@ -434,6 +545,7 @@ export default function UserManagement() {
                       admin={admin} 
                       currentUser={user} 
                       onAction={handleAction} 
+                      onRowClick={handleRowClick}
                     />
                   ))}
                   
@@ -504,6 +616,17 @@ export default function UserManagement() {
         onSuccess={fetchAdmins}
         admin={selectedAdmin}
       />
+      {selectedMobileAdmin && (
+        <MobileAdminDetailsModal 
+          admin={selectedMobileAdmin} 
+          currentUser={user} 
+          onClose={() => setSelectedMobileAdmin(null)} 
+          onAction={(actionType, actAdmin) => {
+            setSelectedMobileAdmin(null);
+            handleAction(actionType, actAdmin);
+          }} 
+        />
+      )}
     </div>
   );
 }

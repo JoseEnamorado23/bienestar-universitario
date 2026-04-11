@@ -233,8 +233,8 @@ function StudentRow({ student, onAction }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <td style={{ padding: '0.8rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>{student.national_id || '—'}</td>
-      <td style={{ padding: '0.8rem 1rem', fontSize: '0.875rem' }}>
+      <td data-label="Cédula / Carnet" style={{ padding: '0.8rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>{student.national_id || '—'}</td>
+      <td data-label="Nombre / Apellido" style={{ padding: '0.8rem 1rem', fontSize: '0.875rem' }}>
         {student.first_name} {student.last_name}
         {isBlocked && student.block_reason && (
           <div style={{ fontSize: '0.72rem', color: '#f87171', marginTop: '2px', opacity: 0.8 }}>
@@ -242,8 +242,8 @@ function StudentRow({ student, onAction }) {
           </div>
         )}
       </td>
-      <td style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{student.program_name}</td>
-      <td style={{ padding: '0.8rem 1rem' }}>
+      <td data-label="Programa" style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{student.program_name}</td>
+      <td data-label="Horas (Nec/Comp)" style={{ padding: '0.8rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem' }}>
           <HiOutlineClock style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
           <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{formatDecimalHours(student.social_hours_required)}</span>
@@ -251,8 +251,8 @@ function StudentRow({ student, onAction }) {
           <span>{formatDecimalHours(student.social_hours_completed)}</span>
         </div>
       </td>
-      <td style={{ padding: '0.8rem 1rem' }}><StatusBadge status={student.status} /></td>
-      <td style={{ padding: '0.8rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+      <td data-label="Estado" style={{ padding: '0.8rem 1rem' }}><StatusBadge status={student.status} /></td>
+      <td data-label="Contacto" style={{ padding: '0.8rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{student.email}</div>
         {student.phone && (
           <div style={{ fontSize: '0.75rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -272,7 +272,7 @@ function StudentRow({ student, onAction }) {
           </div>
         )}
       </td>
-      <td style={{ padding: '0.8rem 1rem' }}>
+      <td data-label="Acciones" style={{ padding: '0.8rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <ActionBtn 
             icon={<HiOutlineClock style={{ transform: 'scale(1.1)' }} />} 
@@ -318,12 +318,10 @@ export default function StudentManagement() {
   const [programs, setPrograms] = useState([]);
   
   useEffect(() => {
-    if (setHeaderContent) {
-      setHeaderContent({
-        title: 'Gestión de Estudiantes',
-        subtitle: 'Visualiza y administra la información de los estudiantes y sus horas sociales.'
-      });
-    }
+    setHeaderContent({ 
+      title: 'Estudiantes', 
+      subtitle: 'Seguimiento de horas y programas' 
+    });
   }, [setHeaderContent]);
   
   // States for query params
@@ -437,13 +435,10 @@ export default function StudentManagement() {
 
       <div className="info-panel">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h3 style={{ margin: 0, whiteSpace: 'nowrap' }}>Estudiantes</h3>
-          </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
             {/* Search Bar */}
-            <div style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
+            <div className="mobile-search-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
               <HiOutlineSearch style={{ position: 'absolute', left: '12px', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
               <input
                 type="text"
@@ -458,7 +453,7 @@ export default function StudentManagement() {
             {/* Filters Dropdown */}
             <div style={{ position: 'relative' }} ref={filterRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)', background: filters.program_id || filters.status ? 'var(--accent-primary)11' : 'transparent' }}
                 onClick={() => { setShowFilters(!showFilters); setShowSort(false); }}
               >
@@ -504,7 +499,7 @@ export default function StudentManagement() {
             {/* Sort Dropdown */}
             <div style={{ position: 'relative' }} ref={sortRef}>
               <button 
-                className="btn btn-ghost" 
+                className="btn btn-ghost mobile-icon-only" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', border: '1px solid var(--border-color)' }}
                 onClick={() => { setShowSort(!showSort); setShowFilters(false); }}
               >
@@ -552,7 +547,7 @@ export default function StudentManagement() {
             {/* Report Button */}
             {user && hasPermission(user.permissions, PERMISSIONS.REPORT_STUDENTS) && (
               <button 
-                className="btn btn-primary" 
+                className="btn btn-primary mobile-fab" 
                 style={{ height: '38px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px', width: 'fit-content' }}
                 onClick={() => setShowReportModal(true)}
               >
@@ -590,7 +585,7 @@ export default function StudentManagement() {
         ) : (
           <>
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
                     {['Cédula / Carnet', 'Nombre / Apellido', 'Programa', 'Horas (Nec/Comp)', 'Estado', 'Contacto', 'Acciones'].map(h => (
