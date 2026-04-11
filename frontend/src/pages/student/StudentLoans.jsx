@@ -92,7 +92,7 @@ export default function StudentLoans() {
             Historial
           </h3>
           <div className="info-panel" style={{ padding: 0, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-glass)' }}>
                   <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Implemento</th>
@@ -105,8 +105,8 @@ export default function StudentLoans() {
               <tbody>
                 {historyLoans.map(loan => (
                   <tr key={loan.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 500 }}>{loan.item?.name || '-'}</td>
-                    <td style={{ padding: '0.85rem 1rem' }}>
+                    <td data-label="Implemento" style={{ padding: '0.85rem 1rem', fontWeight: 500 }}>{loan.item?.name || '-'}</td>
+                    <td data-label="Estado" style={{ padding: '0.85rem 1rem' }}>
                       <StatusBadge status={loan.status} />
                       {loan.status === 'RECHAZADO' && loan.rejection_reason && (
                         <div style={{ fontSize: '0.78rem', color: '#ef4444', marginTop: '4px' }}>
@@ -114,9 +114,9 @@ export default function StudentLoans() {
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: '0.85rem 1rem', fontSize: '0.85rem' }}>{formatDate(loan.start_time)}</td>
-                    <td style={{ padding: '0.85rem 1rem', fontSize: '0.85rem' }}>{formatDate(loan.returned_time)}</td>
-                    <td style={{ padding: '0.85rem 1rem', fontWeight: 600, color: loan.hours_earned > 0 ? 'var(--success)' : 'inherit' }}>
+                    <td data-label="Inicio" style={{ padding: '0.85rem 1rem', fontSize: '0.85rem' }}>{formatDate(loan.start_time)}</td>
+                    <td data-label="Devolución" style={{ padding: '0.85rem 1rem', fontSize: '0.85rem' }}>{formatDate(loan.returned_time)}</td>
+                    <td data-label="Horas ganadas" style={{ padding: '0.85rem 1rem', fontWeight: 600, color: loan.hours_earned > 0 ? 'var(--success)' : 'inherit' }}>
                       {loan.hours_earned > 0 ? `+${loan.formatted_hours_earned || loan.hours_earned + 'h'}` : '-'}
                     </td>
                   </tr>
@@ -146,7 +146,7 @@ function LoanCard({ loan }) {
       {/* Item image / icon */}
       <div style={{ width: 60, height: 60, borderRadius: 12, overflow: 'hidden', background: 'var(--bg-glass)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {loan.item?.image_url
-          ? <img src={`http://localhost:8000${loan.item.image_url}`} alt={loan.item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img src={`http://${window.location.hostname}:8000${loan.item.image_url}`} alt={loan.item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : <HiOutlineClipboardList size={28} style={{ opacity: 0.4 }} />}
       </div>
 

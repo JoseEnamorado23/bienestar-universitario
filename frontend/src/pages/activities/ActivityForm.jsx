@@ -56,7 +56,7 @@ export default function ActivityForm() {
             qr_static_expiry: data.qr_token_expires_at ? data.qr_token_expires_at.slice(0, 16) : '',
           });
           if (data.image_url) {
-            setPreviewUrl(`http://localhost:8000${data.image_url}`);
+            setPreviewUrl(`http://${window.location.hostname}:8000${data.image_url}`);
           }
         })
         .catch(() => {

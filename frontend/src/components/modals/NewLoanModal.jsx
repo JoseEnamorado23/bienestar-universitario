@@ -82,81 +82,40 @@ export default function NewLoanModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="modal-overlay" 
-      onClick={onClose} 
-      style={{ zIndex: 1100 }}
-    >
-      <div 
-        className="modal-content animate-scale" 
-        onClick={e => e.stopPropagation()} 
-        style={{ 
-          background: 'var(--bg-card)', 
-          padding: 0, 
-          borderRadius: '24px', 
-          width: '90%', 
-          maxWidth: '550px', 
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-          overflow: 'hidden',
-          border: 'none'
-        }}
-      >
-        <div style={{ 
-          padding: '2.5rem 2rem', 
-          background: 'linear-gradient(135deg, #00acc9 0%, #008fa6 100%)', 
-          color: 'white', 
-          textAlign: 'center', 
-          position: 'relative' 
-        }}>
-          <button 
-            onClick={onClose} 
-            style={{ 
-              position: 'absolute', 
-              right: '1.25rem', 
-              top: '1.25rem', 
-              background: 'rgba(255,255,255,0.2)', 
-              border: 'none', 
-              color: 'white', 
-              width: '32px', 
-              height: '32px', 
-              borderRadius: '50%', 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              transition: 'background 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.3)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-          >
-            <HiOutlineX size={20} />
-          </button>
-          
+    <div className="bottom-sheet-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="bottom-sheet-content">
+        <div className="bottom-sheet-handle" />
+
+        <div className="modal-header" style={{ padding: '2rem 1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottom: 'none' }}>
           <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            borderRadius: '16px', 
-            background: 'rgba(255,255,255,0.2)', 
-            margin: '0 auto 1.25rem', 
             display: 'flex', 
             alignItems: 'center', 
-            justifyContent: 'center',
-            boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+            gap: '14px',
+            background: 'var(--primary-color)10',
+            padding: '12px 28px',
+            borderRadius: '99px',
+            color: 'var(--primary-color)',
+            boxShadow: '0 4px 12px rgba(0, 172, 201, 0.1)'
           }}>
-            <HiOutlineClipboardList size={32} />
+            <HiOutlineClipboardList size={28} />
+            <h3 style={{ margin: 0, color: 'var(--primary-color)', fontSize: '1.4rem', fontWeight: 700 }}>Nuevo Préstamo</h3>
           </div>
-          
-          <h3 style={{ margin: 0, color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>Generar Nuevo Préstamo</h3>
-          <p style={{ opacity: 0.9, fontSize: '0.9rem', marginTop: '8px' }}>Asigna un implemento directamente a un estudiante verificado.</p>
         </div>
 
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '1.5rem 1.75rem 1.75rem' }}>
           <form onSubmit={handleSubmit}>
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Implemento a prestar
               </label>
               <select 
@@ -164,7 +123,7 @@ export default function NewLoanModal({ isOpen, onClose, onSuccess }) {
                 value={formData.item_id} 
                 onChange={e => setFormData({...formData, item_id: e.target.value})}
                 required
-                style={{ width: '100%', padding: '12px', fontSize: '1rem', borderRadius: '12px' }}
+                style={{ width: '100%', height: '48px', borderRadius: '12px' }}
               >
                 <option value="">-- Seleccione un implemento --</option>
                 {items.map(item => (
@@ -175,72 +134,77 @@ export default function NewLoanModal({ isOpen, onClose, onSuccess }) {
               </select>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                Cédula del Estudiante
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontWeight: 600, display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                Documento del Estudiante
               </label>
               <div style={{ position: 'relative' }}>
-                <HiOutlineIdentification size={24} style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '16px', color: 'var(--text-secondary)' }}/>
+                <HiOutlineIdentification size={22} style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', left: '16px', color: 'var(--text-secondary)' }}/>
                 <input 
                   type="text" 
                   className="form-input" 
-                  style={{ width: '100%', paddingLeft: '50px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px', fontSize: '1rem', borderRadius: '12px' }}
+                  style={{ width: '100%', paddingLeft: '48px', height: '48px', borderRadius: '12px' }}
                   value={formData.student_document} 
                   onChange={e => setFormData({ ...formData, student_document: e.target.value })} 
                   required 
-                  placeholder="Ingrese número de documento"
+                  placeholder="Número de documento"
                 />
               </div>
             </div>
 
             <div style={{ 
-              marginBottom: '2rem', 
-              padding: '1.25rem', 
+              marginBottom: '1.5rem', 
+              padding: '1rem', 
               borderRadius: '16px', 
               background: !studentPreview ? 'var(--bg-glass)' : (studentPreview.status === 'INACTIVE' ? 'rgba(239, 68, 68, 0.08)' : 'rgba(128, 186, 39, 0.08)'),
-              border: `1px solid ${!studentPreview ? 'var(--border-color)' : (studentPreview.status === 'INACTIVE' ? '#ef4444' : '#80ba27')}`,
+              border: `1px solid ${!studentPreview ? 'var(--border-color)' : (studentPreview.status === 'INACTIVE' ? '#ef444466' : '#80ba2766')}`,
               display: 'flex',
               alignItems: 'center',
-              gap: '16px',
+              gap: '12px',
               transition: 'all 0.3s ease'
             }}>
                {searching ? (
-                  <div className="spinner" style={{ width: '24px', height: '24px', borderTopColor: '#00acc9' }}></div>
+                  <div className="spinner" style={{ width: '20px', height: '20px', borderTopColor: 'var(--primary-color)' }}></div>
                ) : studentPreview ? (
                   <>
                     {studentPreview.status === 'INACTIVE' ? (
                       <>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ef444422', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <HiOutlineX size={24} color="#ef4444" />
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ef444422', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <HiOutlineX size={18} color="#ef4444" />
                         </div>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.7rem', color: '#ef4444', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Bloqueado</div>
-                          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{studentPreview.name}</div>
+                          <div style={{ fontSize: '0.65rem', color: '#ef4444', fontWeight: 700, textTransform: 'uppercase' }}>Bloqueado</div>
+                          <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{studentPreview.name}</div>
                         </div>
                       </>
                     ) : (
                       <>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#80ba2722', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <HiOutlineCheckCircle size={24} color="#80ba27" />
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#80ba2722', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <HiOutlineCheckCircle size={18} color="#80ba27" />
                         </div>
                         <div>
-                          <div style={{ fontSize: '0.7rem', color: '#80ba27', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verificado</div>
-                          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>{studentPreview.name}</div>
+                          <div style={{ fontSize: '0.65rem', color: '#80ba27', fontWeight: 700, textTransform: 'uppercase' }}>Verificado</div>
+                          <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{studentPreview.name}</div>
                         </div>
                       </>
                     )}
                   </>
                ) : (
                   <>
-                    <HiOutlineSearch size={24} color="var(--text-muted)" />
-                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                      Complete el documento para validar
+                    <HiOutlineSearch size={20} color="var(--text-muted)" />
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      Ingresa el documento para validar
                     </div>
                   </>
                )}
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: isMobile ? 'column-reverse' : 'row',
+              gap: '0.75rem', 
+              marginTop: '1.5rem' 
+            }}>
               <button 
                 type="button" 
                 className="btn btn-ghost" 
@@ -252,23 +216,17 @@ export default function NewLoanModal({ isOpen, onClose, onSuccess }) {
               </button>
               <button 
                 type="submit" 
-                className="btn" 
+                className="btn btn-primary" 
                 disabled={loading || !studentPreview || studentPreview.status === 'INACTIVE'}
                 style={{ 
-                  flex: 2, 
+                  flex: isMobile ? 1 : 1.5, 
                   height: '48px', 
                   borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #00acc9 0%, #008fa6 100%)',
-                  color: 'white',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
-                  border: 'none',
-                  cursor: (loading || !studentPreview || studentPreview.status === 'INACTIVE') ? 'not-allowed' : 'pointer',
-                  opacity: (loading || !studentPreview || studentPreview.status === 'INACTIVE') ? 0.6 : 1,
-                  boxShadow: '0 4px 12px rgba(0, 172, 201, 0.2)'
+                  gap: '8px'
                 }}
               >
                 {loading ? <div className="spinner" style={{ width: '1.2rem', height: '1.2rem', borderTopColor: 'white' }}></div> : (

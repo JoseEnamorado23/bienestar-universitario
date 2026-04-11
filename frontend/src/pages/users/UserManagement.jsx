@@ -64,77 +64,117 @@ function ActionBtn({ icon, label, colorHex, onClick, isRowHovered }) {
   );
 }
 
-/* ── MOBILE ADMIN DETAILS MODAL ──────────────── */
+/* ── ROLE COLORS MAPPING ──────────────────── */
+const ROLE_AVATAR_COLORS = {
+  super_administrador: 'linear-gradient(135deg, #00acc9 0%, #008fa6 100%)',
+  administrador_general: 'linear-gradient(135deg, #80ba27 0%, #6a9b20 100%)',
+  administrador_prestamos: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+  administrador_actividades: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+};
+
+const getRoleAvatarBg = (roleName) => ROLE_AVATAR_COLORS[roleName] || 'linear-gradient(135deg, #64748b 0%, #475569 100%)';
+
+/* ── MOBILE ADMIN DETAILS MODAL (Bottom Sheet) ──────── */
 function MobileAdminDetailsModal({ admin, currentUser, onClose, onAction }) {
   if (!admin) return null;
 
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--bg-primary)', zIndex: 9999, overflowY: 'auto' }}>
-      <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--bg-card)' }}>
-        <button onClick={onClose} className="btn btn-ghost" style={{ width: 'auto', padding: '8px' }}>
-          <HiOutlineChevronLeft size={24} />
-        </button>
-        <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Perfil de Administrador</h2>
-      </div>
-      <div style={{ padding: '20px' }}>
-         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#00acc9', color: '#fff', fontSize: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px auto' }}>
-              {admin.first_name[0]}{admin.last_name[0]}
-           </div>
-           <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{admin.first_name} {admin.last_name}</h3>
-           <p style={{ margin: '5px 0 10px 0', color: 'var(--text-secondary)' }}>{admin.email}</p>
-           <span className={`header-badge role-${admin.role_name}`}>{admin.role_name}</span>
-         </div>
-         
-         <div className="info-panel" style={{ padding: '20px', marginBottom: '24px' }}>
-           <div style={{ marginBottom: '12px' }}>
-             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>CÉDULA</p>
-             <p style={{ margin: '2px 0 0 0' }}>{admin.national_id || '—'}</p>
-           </div>
-           <div style={{ marginBottom: '12px' }}>
-             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>ESTADO</p>
-             <div style={{ margin: '2px 0 0 0' }}>
-               {admin.status === 'ACTIVE' ? (
-                 <span style={{ color: '#4ade80', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
-                   <HiOutlineCheckCircle /> Activo
-                 </span>
-               ) : admin.status === 'INACTIVE' ? (
-                 <span style={{ color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
-                   <HiOutlineXCircle /> Pendiente
-                 </span>
-               ) : (
-                 <span style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
-                   <HiOutlineXCircle /> Suspendido
-                 </span>
-               )}
-             </div>
-           </div>
-           <div>
-             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>CREADO EL</p>
-             <p style={{ margin: '2px 0 0 0' }}>{new Date(admin.created_at).toLocaleDateString()}</p>
-           </div>
-         </div>
+  const initials = (admin.first_name[0] + (admin.last_name ? admin.last_name[0] : '')).toUpperCase();
+  const statusConfig = {
+    ACTIVE:    { label: 'Activo',     color: '#4ade80', bg: 'rgba(74,222,128,0.1)',  icon: <HiOutlineCheckCircle /> },
+    INACTIVE:  { label: 'Pendiente',  color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',  icon: <HiOutlineXCircle />    },
+    SUSPENDED: { label: 'Suspendido', color: '#f87171', bg: 'rgba(248,113,113,0.1)', icon: <HiOutlineXCircle />    },
+  };
+  const st = statusConfig[admin.status] || statusConfig.ACTIVE;
 
-         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-           <h4 style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '0.9rem', textTransform: 'uppercase' }}>Acciones Disponibles</h4>
-           <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--border-color)' }} onClick={() => onAction('roles', admin)}>
-             <HiOutlineShieldCheck style={{ color: '#a78bfa' }} size={18} /> Gestionar Permisos
-           </button>
-           <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--border-color)' }} onClick={() => onAction('edit', admin)}>
-             <HiOutlinePencil style={{ color: '#00acc9' }} size={18} /> Editar Información
-           </button>
-           {admin.id !== currentUser.id && (
-             admin.status === 'SUSPENDED' ? (
-               <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid #4ade8055', color: '#4ade80' }} onClick={() => onAction('activate', admin)}>
-                 <HiOutlineCheckCircle size={18} /> Activar Administrador
-               </button>
-             ) : (
-               <button className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid #f8717155', color: '#f87171' }} onClick={() => onAction('suspend', admin)}>
-                 <HiOutlineTrash size={18} /> Suspender Administrador
-               </button>
-             )
-           )}
-         </div>
+  return (
+    <div className="mobile-admin-details">
+      <div className="details-overlay" onClick={onClose} />
+      <div className="details-sheet">
+        <div className="bottom-sheet-handle" />
+
+        {/* Profile Header */}
+        <div style={{ padding: '8px 20px 24px', textAlign: 'center' }}>
+          <div style={{ 
+            width: '72px', height: '72px', borderRadius: '50%', 
+            background: getRoleAvatarBg(admin.role_name), 
+            color: '#fff', fontSize: '1.5rem', fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            margin: '0 auto 14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            {initials}
+          </div>
+          <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            {admin.first_name} {admin.last_name}
+          </h3>
+          <p style={{ margin: '0 0 10px', color: 'var(--text-secondary)', fontSize: '0.85rem', wordBreak: 'break-all' }}>
+            {admin.email}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span className={`header-badge role-${admin.role_name}`} style={{ fontSize: '0.7rem' }}>
+              {admin.role_name}
+            </span>
+            <span style={{ 
+              display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem',
+              padding: '3px 10px', borderRadius: '9999px', fontWeight: 600,
+              background: st.bg, color: st.color
+            }}>
+              {st.icon} {st.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Info Grid */}
+        <div style={{ 
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1px',
+          background: 'rgba(0,0,0,0.04)', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)'
+        }}>
+          <div style={{ padding: '14px 20px', background: 'var(--bg-primary)' }}>
+            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cédula</p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.95rem', fontWeight: 500 }}>{admin.national_id || '—'}</p>
+          </div>
+          <div style={{ padding: '14px 20px', background: 'var(--bg-primary)' }}>
+            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Registrado</p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(admin.created_at).toLocaleDateString()}</p>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', fontSize: '0.9rem' }} 
+            onClick={() => onAction('roles', admin)}
+          >
+            <HiOutlineShieldCheck style={{ color: '#a78bfa', fontSize: '1.2rem' }} /> Gestionar Permisos
+          </button>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', fontSize: '0.9rem' }} 
+            onClick={() => onAction('edit', admin)}
+          >
+            <HiOutlinePencil style={{ color: '#00acc9', fontSize: '1.2rem' }} /> Editar Información
+          </button>
+          {admin.id !== currentUser.id && (
+            admin.status === 'SUSPENDED' ? (
+              <button 
+                className="btn btn-ghost" 
+                style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', fontSize: '0.9rem' }}
+                onClick={() => onAction('activate', admin)}
+              >
+                <HiOutlineCheckCircle style={{ fontSize: '1.2rem' }} /> Activar
+              </button>
+            ) : (
+              <button 
+                className="btn btn-ghost" 
+                style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid rgba(248,113,113,0.3)', color: '#f87171', fontSize: '0.9rem' }}
+                onClick={() => onAction('suspend', admin)}
+              >
+                <HiOutlineTrash style={{ fontSize: '1.2rem' }} /> Suspender
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );
@@ -165,25 +205,34 @@ function UserRow({ admin, currentUser, onAction, onRowClick }) {
       </td>
       <td data-label="Nombre / Apellido" style={{ padding: '0.85rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
-          {/* Avatar for mobile/list view */}
-          <div className="show-on-mobile" style={{ 
-            width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-primary)', 
-            color: '#fff', fontSize: '0.9rem', fontWeight: 700, display: 'flex', 
-            alignItems: 'center', justifyContent: 'center', flexShrink: 0 
-          }}>
-            {initials}
+          {/* Avatar with status dot */}
+          <div className="show-on-mobile" style={{ position: 'relative', flexShrink: 0 }}>
+            <div style={{ 
+              width: '44px', height: '44px', borderRadius: '50%', 
+              background: getRoleAvatarBg(admin.role_name), 
+              color: '#fff', fontSize: '0.85rem', fontWeight: 700, 
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              {initials}
+            </div>
+            <div style={{
+              position: 'absolute', bottom: '0', right: '0',
+              width: '12px', height: '12px', borderRadius: '50%',
+              border: '2px solid var(--bg-primary)',
+              background: admin.status === 'ACTIVE' ? '#4ade80' : admin.status === 'INACTIVE' ? '#fbbf24' : '#f87171'
+            }} />
           </div>
           
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600, fontSize: '0.9rem' }}>
                 {admin.first_name} {admin.last_name}
               </span>
-              <HiOutlineChevronRight className="show-on-mobile" style={{ color: 'var(--text-muted)', flexShrink: 0 }} size={18} />
+              <HiOutlineChevronRight className="show-on-mobile" style={{ color: 'var(--text-muted)', flexShrink: 0 }} size={16} />
             </div>
-            {/* Show role inside the name cell for mobile */}
-            <div className="show-on-mobile" style={{ marginTop: '2px' }}>
-               <span className={`header-badge role-${admin.role_name}`} style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
+            {/* Role badge for mobile */}
+            <div className="show-on-mobile" style={{ marginTop: '3px' }}>
+               <span className={`header-badge role-${admin.role_name}`} style={{ fontSize: '0.6rem', padding: '1px 8px' }}>
                 {admin.role_name}
               </span>
             </div>

@@ -1142,6 +1142,44 @@ img {
   flex: 1;
 }
 
+/* BOTTOM SHEET COMPONENT (Mobile) */
+.bottom-sheet-overlay {
+  display: flex;
+  align-items: flex-end; /* Align to bottom */
+  padding: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.bottom-sheet-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: 85vh !important;
+  border-radius: 20px 20px 0 0 !important;
+  margin: 0 !important;
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+}
+
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  margin: 12px auto;
+  flex-shrink: 0;
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Compact Form Grid */
 .form-grid-compact {
   display: grid;
@@ -1314,14 +1352,14 @@ img {
   }
   
   .page-content {
-    padding: var(--space-xs) !important;
+    padding: var(--space-sm) !important;
   }
 
   .info-panel {
-    padding: var(--space-sm) !important;
-    border-radius: 0 !important;
-    border-left: none !important;
-    border-right: none !important;
+    padding: var(--space-md) !important;
+    border-radius: 16px !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05) !important;
   }
 
   /* Edge-to-edge list wrapper styling on mobile */
@@ -1382,37 +1420,171 @@ img {
     display: none !important; /* hide the text and the chevron */
   }
 
-  /* Specific style for Administrator List as Profile List */
+  /* ── Administrator Profile List (Mobile) ── */
   table.responsive-table.profile-list {
     background: transparent;
     border: none;
     box-shadow: none;
   }
 
+  table.responsive-table.profile-list thead {
+    display: none;
+  }
+
+  table.responsive-table.profile-list tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
   table.responsive-table.profile-list tr {
     flex-direction: row;
     align-items: center;
-    padding: var(--space-sm) var(--space-md);
-    gap: var(--space-sm);
-    border-left: none;
-    border-right: none;
-    border-top: none;
+    padding: 14px 16px;
+    gap: 0;
+    border: none;
     border-radius: 0;
     margin-bottom: 0;
     border-bottom: 1px solid rgba(0,0,0,0.06);
     box-shadow: none;
     background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  table.responsive-table.profile-list tr:active {
+    background: rgba(0,0,0,0.03);
   }
 
   table.responsive-table.profile-list td {
     display: flex;
     border: none;
-    padding: 0;
+    padding: 0 !important;
     text-align: left;
     background: transparent;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   table.responsive-table.profile-list td::before {
-    display: none; /* No labels in profile list mode */
+    display: none !important;
   }
-}
+
+  /* ── Student List (Mobile) ── */
+  table.responsive-table.student-list {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  table.responsive-table.student-list thead {
+    display: none;
+  }
+
+  table.responsive-table.student-list tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  table.responsive-table.student-list tr {
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 0;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    box-shadow: none;
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  table.responsive-table.student-list tr:active {
+    background: rgba(0,0,0,0.03);
+  }
+
+  table.responsive-table.student-list td {
+    display: flex;
+    border: none;
+    padding: 0 !important;
+    text-align: left;
+    background: transparent;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  table.responsive-table.student-list td::before {
+    display: none !important;
+  }
+
+  /* ── Mobile Admin Details Modal as Bottom Sheet ── */
+  .mobile-admin-details {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-admin-details .details-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    animation: modalFadeIn 0.2s ease;
+  }
+
+  .mobile-admin-details .details-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 92vh;
+    background: var(--bg-primary);
+    border-radius: 20px 20px 0 0;
+    animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+  }
+}
+
+/* ── Global Bottom Sheet Pattern ── */
+.bottom-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: modalFadeIn 0.2s ease;
+}
+
+.bottom-sheet-content {
+  width: 100%;
+  max-width: 650px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 95vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+
+@media (max-width: 768px) {
+  .bottom-sheet-content {
+    max-width: 100%;
+  }
+}
+

@@ -60,13 +60,8 @@ export default function AdminPermissions() {
         
         setSelectedPermissions(directPerms);
         
-        // Auto-expand groups that have active permissions
-        const groupsToExpand = new Set();
-        adminPermsRes.data.forEach(p => {
-          const groupCode = p.code.split(':')[0];
-          groupsToExpand.add(groupCode);
-        });
-        setExpandedGroups(groupsToExpand);
+        // All groups closed by default as requested
+        setExpandedGroups(new Set());
         
       } catch (error) {
         toast.error('Error al cargar datos del administrador');
@@ -105,7 +100,8 @@ export default function AdminPermissions() {
     'loan': 'Préstamos y Devoluciones',
     'inventory': 'Inventario y Equipos',
     'system': 'Sistema y Configuración',
-    'role': 'Roles y Permisos'
+    'role': 'Roles y Permisos',
+    'report': 'Reportes'
   };
 
   const handleToggleGroup = (group) => {

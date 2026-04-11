@@ -222,28 +222,201 @@ function ActionBtn({ icon, label, colorHex, onClick, isRowHovered }) {
   );
 }
 
+/* ── MOBILE STUDENT DETAILS MODAL (Bottom Sheet) ──── */
+function MobileStudentDetailsModal({ student, onClose, onAction }) {
+  if (!student) return null;
+
+  const initials = (student.first_name[0] + (student.last_name ? student.last_name[0] : '')).toUpperCase();
+  const isBlocked = student.status === 'INACTIVE';
+  const statusConfig = {
+    ACTIVE:   { label: 'Activo',    color: '#4ade80', bg: 'rgba(74,222,128,0.1)',  icon: <HiOutlineCheckCircle /> },
+    INACTIVE: { label: 'Bloqueado', color: '#f87171', bg: 'rgba(248,113,113,0.1)', icon: <HiOutlineXCircle /> },
+  };
+  const st = statusConfig[student.status] || statusConfig.ACTIVE;
+
+  return (
+    <div className="mobile-admin-details">
+      <div className="details-overlay" onClick={onClose} />
+      <div className="details-sheet">
+        <div className="bottom-sheet-handle" />
+
+        {/* Profile Header */}
+        <div style={{ padding: '8px 20px 24px', textAlign: 'center' }}>
+          <div style={{ 
+            width: '72px', height: '72px', borderRadius: '50%', 
+            background: isBlocked ? 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)' : 'linear-gradient(135deg, #00acc9 0%, #008fa6 100%)', 
+            color: '#fff', fontSize: '1.5rem', fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            margin: '0 auto 14px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            {initials}
+          </div>
+          <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            {student.first_name} {student.last_name}
+          </h3>
+          <p style={{ margin: '0 0 4px', color: 'var(--text-secondary)', fontSize: '0.85rem', wordBreak: 'break-all' }}>
+            {student.email}
+          </p>
+          {student.program_name && (
+            <p style={{ margin: '0 0 10px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+              {student.program_name}
+            </p>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ 
+              display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem',
+              padding: '3px 10px', borderRadius: '9999px', fontWeight: 600,
+              background: st.bg, color: st.color
+            }}>
+              {st.icon} {st.label}
+            </span>
+          </div>
+          {isBlocked && student.block_reason && (
+            <p style={{ margin: '10px 0 0', color: '#f87171', fontSize: '0.78rem', fontStyle: 'italic' }}>
+              Motivo: {student.block_reason}
+            </p>
+          )}
+        </div>
+
+        {/* Info Grid */}
+        <div style={{ 
+          display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px',
+          background: 'rgba(0,0,0,0.04)', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)'
+        }}>
+          <div style={{ padding: '14px 16px', background: 'var(--bg-primary)' }}>
+            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cédula</p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontWeight: 500 }}>{student.national_id || '—'}</p>
+          </div>
+          <div style={{ padding: '14px 16px', background: 'var(--bg-primary)', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Requeridas</p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-primary)' }}>{formatDecimalHours(student.social_hours_required)}</p>
+          </div>
+          <div style={{ padding: '14px 16px', background: 'var(--bg-primary)', textAlign: 'right' }}>
+            <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Completadas</p>
+            <p style={{ margin: '4px 0 0', fontSize: '0.9rem', fontWeight: 600, color: '#80ba27' }}>{formatDecimalHours(student.social_hours_completed)}</p>
+          </div>
+        </div>
+
+        {/* Contact info */}
+        {student.phone && (
+          <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ margin: 0, fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Teléfono</p>
+              <p style={{ margin: '2px 0 0', fontSize: '0.9rem', fontWeight: 500 }}>{student.phone}</p>
+            </div>
+            <button 
+              onClick={() => { navigator.clipboard.writeText(student.phone); toast.success('Teléfono copiado'); }}
+              style={{ background: 'rgba(0,172,201,0.1)', border: 'none', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#00acc9' }}
+            >
+              <HiOutlineDuplicate size={18} />
+            </button>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', fontSize: '0.9rem' }} 
+            onClick={() => onAction('view-hours', student)}
+          >
+            <HiOutlineClock style={{ color: '#00acc9', fontSize: '1.2rem' }} /> Ver horas sociales
+          </button>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', fontSize: '0.9rem' }} 
+            onClick={() => onAction('edit', student)}
+          >
+            <HiOutlinePencil style={{ color: '#00acc9', fontSize: '1.2rem' }} /> Editar información
+          </button>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: '1px solid var(--border-color)', fontSize: '0.9rem' }} 
+            onClick={() => onAction('hours', student)}
+          >
+            <HiOutlinePlus style={{ color: '#80ba27', fontSize: '1.2rem' }} /> Añadir horas
+          </button>
+          <button 
+            className="btn btn-ghost" 
+            style={{ justifyContent: 'flex-start', gap: '12px', padding: '14px 16px', borderRadius: '14px', border: `1px solid ${isBlocked ? 'rgba(74,222,128,0.3)' : 'rgba(248,113,113,0.3)'}`, color: isBlocked ? '#4ade80' : '#f87171', fontSize: '0.9rem' }}
+            onClick={() => onAction('block', student)}
+          >
+            {isBlocked ? <HiOutlineLockOpen style={{ fontSize: '1.2rem' }} /> : <HiOutlineLockClosed style={{ fontSize: '1.2rem' }} />}
+            {isBlocked ? 'Desbloquear estudiante' : 'Bloquear estudiante'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── STUDENT ROW ──────────────────────────── */
-function StudentRow({ student, onAction }) {
+function StudentRow({ student, onAction, onRowClick }) {
   const [isHovered, setIsHovered] = useState(false);
   const isBlocked = student.status === 'INACTIVE';
+  const initials = (student.first_name[0] + (student.last_name ? student.last_name[0] : '')).toUpperCase();
 
   return (
     <tr 
-      style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', background: isHovered ? 'var(--bg-glass)' : 'transparent', transition: 'background 0.2s ease' }}
+      style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', background: isHovered ? 'var(--bg-glass)' : 'transparent', transition: 'background 0.2s ease', cursor: 'pointer' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        if (e.target.closest('button')) return;
+        onRowClick && onRowClick(student);
+      }}
     >
-      <td data-label="Cédula / Carnet" style={{ padding: '0.8rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>{student.national_id || '—'}</td>
+      <td className="hide-on-mobile" data-label="Cédula / Carnet" style={{ padding: '0.8rem 1rem', fontWeight: 500, fontSize: '0.875rem' }}>{student.national_id || '—'}</td>
       <td data-label="Nombre / Apellido" style={{ padding: '0.8rem 1rem', fontSize: '0.875rem' }}>
-        {student.first_name} {student.last_name}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+          {/* Mobile Avatar */}
+          <div className="show-on-mobile" style={{ position: 'relative', flexShrink: 0 }}>
+            <div style={{ 
+              width: '44px', height: '44px', borderRadius: '50%', 
+              background: isBlocked ? 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)' : 'linear-gradient(135deg, #00acc9 0%, #008fa6 100%)', 
+              color: '#fff', fontSize: '0.85rem', fontWeight: 700, 
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              {initials}
+            </div>
+            <div style={{
+              position: 'absolute', bottom: '0', right: '0',
+              width: '12px', height: '12px', borderRadius: '50%',
+              border: '2px solid var(--bg-primary)',
+              background: student.status === 'ACTIVE' ? '#4ade80' : '#f87171'
+            }} />
+          </div>
+          
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600, fontSize: '0.9rem' }}>
+                {student.first_name} {student.last_name}
+              </span>
+              {/* Mobile hours badge */}
+              <span className="show-on-mobile" style={{ 
+                display: 'flex', alignItems: 'center', gap: '4px',
+                fontSize: '0.75rem', fontWeight: 600, color: '#80ba27',
+                background: 'rgba(128,186,39,0.1)', padding: '2px 8px', borderRadius: '8px', flexShrink: 0
+              }}>
+                <HiOutlineClock style={{ fontSize: '0.8rem' }} />
+                {formatDecimalHours(student.social_hours_completed)}
+              </span>
+            </div>
+            <span className="show-on-mobile" style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {student.program_name || student.email}
+            </span>
+          </div>
+        </div>
+
         {isBlocked && student.block_reason && (
           <div style={{ fontSize: '0.72rem', color: '#f87171', marginTop: '2px', opacity: 0.8 }}>
             Motivo: {student.block_reason}
           </div>
         )}
       </td>
-      <td data-label="Programa" style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{student.program_name}</td>
-      <td data-label="Horas (Nec/Comp)" style={{ padding: '0.8rem 1rem' }}>
+      <td className="hide-on-mobile" data-label="Programa" style={{ padding: '0.8rem 1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{student.program_name}</td>
+      <td className="hide-on-mobile" data-label="Horas (Nec/Comp)" style={{ padding: '0.8rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem' }}>
           <HiOutlineClock style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
           <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{formatDecimalHours(student.social_hours_required)}</span>
@@ -251,8 +424,8 @@ function StudentRow({ student, onAction }) {
           <span>{formatDecimalHours(student.social_hours_completed)}</span>
         </div>
       </td>
-      <td data-label="Estado" style={{ padding: '0.8rem 1rem' }}><StatusBadge status={student.status} /></td>
-      <td data-label="Contacto" style={{ padding: '0.8rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+      <td className="hide-on-mobile" data-label="Estado" style={{ padding: '0.8rem 1rem' }}><StatusBadge status={student.status} /></td>
+      <td className="hide-on-mobile" data-label="Contacto" style={{ padding: '0.8rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
         <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{student.email}</div>
         {student.phone && (
           <div style={{ fontSize: '0.75rem', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -272,7 +445,7 @@ function StudentRow({ student, onAction }) {
           </div>
         )}
       </td>
-      <td data-label="Acciones" style={{ padding: '0.8rem 1rem' }}>
+      <td className="hide-on-mobile" data-label="Acciones" style={{ padding: '0.8rem 1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           <ActionBtn 
             icon={<HiOutlineClock style={{ transform: 'scale(1.1)' }} />} 
@@ -332,6 +505,7 @@ export default function StudentManagement() {
   const [sorting, setSorting] = useState({ sort_by: 'id', order: 'desc' });
   
   const [modal, setModal] = useState(null); // { type, student }
+  const [selectedMobileStudent, setSelectedMobileStudent] = useState(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const { user } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
@@ -394,11 +568,18 @@ export default function StudentManagement() {
   useEffect(() => { setPage(1); }, [search, filters]);
 
   const handleAction = (type, student) => {
+    setSelectedMobileStudent(null);
     if (type === 'view-hours') {
       navigate(`/dashboard/horas?userId=${student.id}`);
       return;
     }
     setModal({ type, student });
+  };
+
+  const handleRowClick = (student) => {
+    if (window.innerWidth <= 768) {
+      setSelectedMobileStudent(student);
+    }
   };
 
   const handleToggleStatus = async (reason) => {
@@ -584,8 +765,8 @@ export default function StudentManagement() {
           </div>
         ) : (
           <>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div className="profile-list-wrapper" style={{ overflowX: 'auto' }}>
+              <table className="responsive-table student-list" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
                     {['Cédula / Carnet', 'Nombre / Apellido', 'Programa', 'Horas (Nec/Comp)', 'Estado', 'Contacto', 'Acciones'].map(h => (
@@ -595,7 +776,7 @@ export default function StudentManagement() {
                 </thead>
                 <tbody>
                   {students.map(student => (
-                    <StudentRow key={student.id} student={student} onAction={handleAction} />
+                    <StudentRow key={student.id} student={student} onAction={handleAction} onRowClick={handleRowClick} />
                   ))}
                   {students.length === 0 && (
                     <tr>
@@ -655,6 +836,16 @@ export default function StudentManagement() {
           </>
         )}
       </div>
+      {selectedMobileStudent && (
+        <MobileStudentDetailsModal 
+          student={selectedMobileStudent} 
+          onClose={() => setSelectedMobileStudent(null)} 
+          onAction={(actionType, student) => {
+            setSelectedMobileStudent(null);
+            handleAction(actionType, student);
+          }} 
+        />
+      )}
     </div>
   );
 }

@@ -64,6 +64,13 @@ export default function CreateAdmin() {
     }
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -85,20 +92,21 @@ export default function CreateAdmin() {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '801px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '1.5rem' }}>
-        <Link to="/dashboard/usuarios" className="btn btn-ghost" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '0.5rem 1rem' }}>
-          <HiOutlineArrowLeft /> Volver a Administradores
-        </Link>
-      </div>
-
-      <div className="info-panel">
+      <div className="info-panel" style={{ position: 'relative' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '1rem' }}>
+          <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: 600 }}>Crear Nuevo Administrador</h3>
+          <Link to="/dashboard/usuarios" className="btn btn-ghost" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <HiOutlineArrowLeft /> Volver
+          </Link>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="form-grid-compact">
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Nombre</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Nombre</label>
               <input
                 type="text"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 value={formData.first_name}
                 onChange={e => setFormData({...formData, first_name: e.target.value})}
@@ -106,10 +114,11 @@ export default function CreateAdmin() {
             </div>
             
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Apellidos</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Apellidos</label>
               <input
                 type="text"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 value={formData.last_name}
                 onChange={e => setFormData({...formData, last_name: e.target.value})}
@@ -117,10 +126,11 @@ export default function CreateAdmin() {
             </div>
             
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Cédula / ID</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Cédula / id</label>
               <input
                 type="text"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 placeholder="100200300"
                 value={formData.national_id}
@@ -129,10 +139,11 @@ export default function CreateAdmin() {
             </div>
             
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Email</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Email</label>
               <input
                 type="email"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 placeholder="admin@universidad.edu.co"
                 value={formData.email}
@@ -141,10 +152,11 @@ export default function CreateAdmin() {
             </div>
 
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Contraseña Temporal</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Contraseña temporal</label>
               <input
                 type="password"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 minLength={6}
                 value={formData.password}
@@ -153,25 +165,26 @@ export default function CreateAdmin() {
             </div>
             
             <div className="form-group mb-0">
-              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)' }}>Teléfono</label>
+              <label style={{ fontSize: '0.85rem', marginBottom: '6px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'none' }}>Teléfono</label>
               <input
                 type="text"
                 className="form-input"
+                style={{ padding: '0.55rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
                 required
                 value={formData.phone}
                 onChange={e => setFormData({...formData, phone: e.target.value})}
               />
             </div>
             
-            <div className="form-group mb-0" style={{ gridColumn: 'span 2' }}>
-              <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500, display: 'block' }}>Rol del Sistema</label>
+            <div className="form-group mb-0" style={{ gridColumn: isMobile ? 'span 1' : 'span 2' }}>
+              <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px', fontWeight: 500, display: 'block', textTransform: 'none' }}>Rol del sistema</label>
               <select
                 className="form-input"
                 required
                 value={formData.role_id}
                 onChange={handleRoleChange}
                 disabled={loadingRoles}
-                style={{ padding: '0.5rem 0.75rem' }}
+                style={{ padding: '0.35rem 0.8rem', height: '38px', fontSize: '0.9rem' }}
               >
                 <option value="">Selecciona un rol...</option>
                 {roles.filter(r => r.name !== 'estudiante').map(role => (
@@ -211,12 +224,35 @@ export default function CreateAdmin() {
             </div>
           )}
 
-          <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <Link to="/dashboard/usuarios" className="btn btn-ghost" disabled={loading}>
+          <div style={{ 
+            marginTop: '2.5rem', 
+            display: 'flex', 
+            flexDirection: isMobile ? 'column-reverse' : 'row',
+            justifyContent: isMobile ? 'stretch' : 'flex-end', 
+            gap: '1rem', 
+            paddingTop: '1.5rem', 
+            borderTop: '1px solid rgba(255,255,255,0.05)' 
+          }}>
+            <Link 
+              to="/dashboard/usuarios" 
+              className="btn btn-ghost" 
+              disabled={loading}
+              style={{ padding: '0.75rem', justifyContent: 'center', fontSize: '1rem' }}
+            >
               Cancelar
             </Link>
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: 'auto', paddingLeft: '2rem', paddingRight: '2rem' }}>
-              <HiOutlineUserAdd className="mr-2" style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={loading} 
+              style={{ 
+                width: isMobile ? '100%' : 'auto', 
+                padding: '0.75rem 2rem', 
+                justifyContent: 'center',
+                fontSize: '1rem'
+              }}
+            >
+              <HiOutlineUserAdd className="mr-2" style={{ verticalAlign: 'middle', marginRight: '8px', fontSize: '1.2rem' }} />
               {loading ? 'Procesando...' : 'Crear Administrador'}
             </button>
           </div>

@@ -27,7 +27,7 @@ function ActivityCard({ activity, onScan, alreadyAttended }) {
       <div style={{
         height: 110,
         background: activity.image_url
-          ? `url(http://localhost:8000${activity.image_url}) center/cover`
+          ? `url(http://${window.location.hostname}:8000${activity.image_url}) center/cover`
           : 'linear-gradient(135deg, rgba(0,172,201,0.15), rgba(128,186,39,0.15))',
         position: 'relative',
       }}>
@@ -220,7 +220,7 @@ export default function StudentActivities() {
             </div>
           ) : (
             <div className="info-panel" style={{ padding: 0, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-glass)' }}>
                     <th style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600 }}>Actividad</th>
@@ -231,13 +231,13 @@ export default function StudentActivities() {
                 <tbody>
                   {history.map(att => (
                     <tr key={att.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                      <td style={{ padding: '10px 16px', fontWeight: 500 }}>
+                      <td data-label="Actividad" style={{ padding: '10px 16px', fontWeight: 500 }}>
                         Actividad #{att.activity_id}
                       </td>
-                      <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--success)' }}>
+                      <td data-label="Horas" style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--success)' }}>
                         +{att.hours_earned}h
                       </td>
-                      <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
+                      <td data-label="Fecha" style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
                         {formatDateTime(att.scanned_at)}
                       </td>
                     </tr>

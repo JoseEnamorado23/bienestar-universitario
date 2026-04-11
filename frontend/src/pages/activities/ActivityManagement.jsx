@@ -270,7 +270,7 @@ function AttendancesModal({ activity, onClose }) {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <th style={{ padding: '8px 12px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600 }}>Estudiante</th>
@@ -282,16 +282,16 @@ function AttendancesModal({ activity, onClose }) {
                 <tbody>
                   {attendances.map(att => (
                     <tr key={att.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                      <td style={{ padding: '8px 12px' }}>
+                      <td data-label="Estudiante" style={{ padding: '8px 12px' }}>
                         {att.student
                           ? `${att.student.first_name} ${att.student.last_name}`
                           : `Est. #${att.student_id}`}
                       </td>
-                      <td style={{ padding: '8px 12px', color: 'var(--success)', fontWeight: 700 }}>+{att.hours_earned}h</td>
-                      <td style={{ padding: '8px 12px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                      <td data-label="Horas" style={{ padding: '8px 12px', color: 'var(--success)', fontWeight: 700 }}>+{att.hours_earned}h</td>
+                      <td data-label="Escaneado" style={{ padding: '8px 12px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                         {formatDateTime(att.scanned_at)}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      <td data-label="Ubicación" style={{ padding: '8px 12px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                         {att.scan_latitude != null
                           ? `${att.scan_latitude.toFixed(4)}, ${att.scan_longitude.toFixed(4)}`
                           : '—'}
