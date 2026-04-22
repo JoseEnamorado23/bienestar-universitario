@@ -618,9 +618,15 @@ async def update_student_info(
 @router.get("/students/{user_id}/loans")
 async def get_student_loan_history(
     user_id: int = Path(..., ge=1),
-    current_user: User = Depends(require_any_permissions(["user:read:all", "loan:read:all"])),
+    current_user: User = Depends(require_any_permissions(["user:read:all", "loan:read:all", "loan:read:own"])),
     db: Session = Depends(get_db)
 ):
+    # Students can only see their own loans
+    from app.api.dependencies.permissions import has_permission
+    if not has_permission(current_user, "user:read:all", db) and not has_permission(current_user, "loan:read:all", db):
+        if current_user.id != user_id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="No tienes permiso para ver préstamos de otro usuario")
     """Historial de préstamos de un estudiante específico."""
     from fastapi import HTTPException
     student = db.query(Student).filter(Student.user_id == user_id).first()
@@ -746,9 +752,15 @@ async def add_additional_hours(
 @router.get("/students/{user_id}/additional-hours")
 async def get_additional_hours(
     user_id: int = Path(..., ge=1),
-    current_user: User = Depends(require_any_permissions(["user:read:all"])),
+    current_user: User = Depends(require_any_permissions(["user:read:all", "student:view_hours"])),
     db: Session = Depends(get_db)
 ):
+    # Students can only see their own additional hours
+    from app.api.dependencies.permissions import has_permission
+    if not has_permission(current_user, "user:read:all", db):
+        if current_user.id != user_id:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=403, detail="No tienes permiso para ver horas de otro usuario")
     """Historial de horas adicionales otorgadas a un estudiante."""
     from fastapi import HTTPException
     student = db.query(Student).filter(Student.user_id == user_id).first()
