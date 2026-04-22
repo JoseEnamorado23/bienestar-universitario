@@ -144,17 +144,10 @@ export default function RoleManagement() {
   return (
     <div className="animate-fade-in">
       <div className="info-panel">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0, 172, 201, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)' }}>
-              <HiOutlineShieldCheck size={24} />
-            </div>
-            <div>
-              <h3 style={{ margin: 0 }}>Roles del Sistema</h3>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                Configurando privilegios para el rol seleccionado.
-              </p>
-            </div>
+        <div className="page-toolbar">
+          <div className="page-toolbar-title">
+            <h1>Roles y Permisos</h1>
+            <p>Gestiona los roles del sistema y sus privilegios asignados</p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-card)', padding: '6px 16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>

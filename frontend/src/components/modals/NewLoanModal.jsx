@@ -92,11 +92,27 @@ export default function NewLoanModal({ isOpen, onClose, onSuccess }) {
   if (!isOpen) return null;
 
   return (
-    <div className="bottom-sheet-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="bottom-sheet-content">
-        <div className="bottom-sheet-handle" />
+    <div className={isMobile ? "bottom-sheet-overlay" : "modal-overlay"} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div 
+        className={isMobile ? "bottom-sheet-content" : "modal-content animate-slide-up"}
+        style={!isMobile ? { maxWidth: '550px' } : undefined}
+      >
+        {isMobile && <div className="bottom-sheet-handle" />}
 
-        <div className="modal-header" style={{ padding: '2rem 1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottom: 'none' }}>
+        <div className="modal-header" style={{ padding: '2rem 1.75rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', borderBottom: 'none', position: 'relative' }}>
+          {!isMobile && (
+            <button 
+              onClick={onClose}
+              style={{ 
+                position: 'absolute', top: '1rem', right: '1rem', 
+                background: 'transparent', border: 'none', 
+                color: 'var(--text-secondary)', cursor: 'pointer',
+                padding: '4px', display: 'flex'
+              }}
+            >
+              <HiOutlineX size={20} />
+            </button>
+          )}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 

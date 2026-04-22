@@ -25,6 +25,7 @@ import ActivityManagement from './pages/activities/ActivityManagement';
 import ActivityForm from './pages/activities/ActivityForm';
 import PublicQRView from './pages/activities/PublicQRView';
 import SocialHours from './pages/hours/SocialHours';
+import ProgramManagement from './pages/programs/ProgramManagement';
 
 import AuditLog from './pages/users/AuditLog';
 import NotFound from './pages/NotFound';
@@ -72,6 +73,11 @@ export default function App() {
             <Route path="estudiantes" element={
               <ProtectedRoute requiredPermissions={['user:read:all']}>
                 <StudentManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="programas" element={
+              <ProtectedRoute requiredPermissions={['user:read:all']}>
+                <ProgramManagement />
               </ProtectedRoute>
             } />
             <Route path="crear-admin" element={

@@ -136,10 +136,16 @@ export default function ActivityForm() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 800, margin: '0 auto' }}>
       {/* Header Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-        <button onClick={() => navigate('/dashboard/actividades')} className="btn btn-ghost" style={{ width: 'auto' }}>
-          <HiOutlineChevronLeft size={18} /> Volver al listado
-        </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button onClick={() => navigate('/dashboard/actividades')} className="btn btn-ghost" style={{ width: 'auto' }}>
+            <HiOutlineChevronLeft size={18} />
+          </button>
+          <div className="page-toolbar-title">
+            <h1>{isEdit ? 'Editar Actividad' : 'Nueva Actividad'}</h1>
+            <p>{isEdit ? 'Actualiza los detalles de la actividad' : 'Crea una nueva actividad para los estudiantes'}</p>
+          </div>
+        </div>
         {isEdit && (
           <button onClick={handleDelete} className="btn btn-ghost" style={{ color: '#ef4444', borderColor: 'rgba(239,68,68,0.2)', width: 'auto' }}>
             <HiOutlineTrash size={18} /> Eliminar

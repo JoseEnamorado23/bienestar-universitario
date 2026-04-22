@@ -176,16 +176,16 @@ export default function AuditLog() {
             <p>No se encontraron registros con los filtros actuales.</p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)' }}>
             <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>Fecha / Hora</th>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>Usuario</th>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>Acción</th>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>Entidad</th>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>IP</th>
-                  <th style={{ padding: '10px 8px', fontWeight: 500 }}>Detalles</th>
+                <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha / Hora</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Usuario</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Acción</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Entidad</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>IP</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Detalles</th>
                 </tr>
               </thead>
               <tbody>

@@ -10,6 +10,7 @@ import {
   HiOutlineDocumentReport,
   HiOutlineCog,
   HiOutlineAcademicCap,
+  HiOutlineBookOpen,
 } from 'react-icons/hi';
 
 /**
@@ -65,6 +66,15 @@ export function getMenuItems(userPermissions) {
       label: 'Estudiantes',
       path: '/dashboard/estudiantes',
       icon: HiOutlineAcademicCap,
+      show: true,
+    });
+
+    // Programas Académicos
+    items.push({
+      id: 'programs',
+      label: 'Programas',
+      path: '/dashboard/programas',
+      icon: HiOutlineBookOpen,
       show: true,
     });
   }
@@ -201,6 +211,15 @@ export function getMenuItems(userPermissions) {
     label: 'Mi Perfil',
     path: '/dashboard/perfil',
     icon: HiOutlineAcademicCap,
+    show: true,
+  });
+
+  // Ajustes
+  items.push({
+    id: 'settings',
+    label: 'Configuración',
+    path: 'modal:settings',
+    icon: HiOutlineCog,
     show: true,
   });
 

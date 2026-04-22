@@ -94,7 +94,10 @@ export default function CreateAdmin() {
     <div className="animate-fade-in" style={{ maxWidth: '801px', margin: '0 auto' }}>
       <div className="info-panel" style={{ position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)', paddingBottom: '1rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: 600 }}>Crear Nuevo Administrador</h3>
+          <div className="page-toolbar-title">
+            <h1>Nuevo Administrador</h1>
+            <p>Ingrese los datos del nuevo administrador</p>
+          </div>
           <Link to="/dashboard/usuarios" className="btn btn-ghost" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
             <HiOutlineArrowLeft /> Volver
           </Link>

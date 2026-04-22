@@ -329,7 +329,7 @@ img {
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-primary);
+  background: #ffffff;
 }
 
 /* SIDEBAR */
@@ -340,28 +340,22 @@ img {
   top: 0;
   left: 0;
   z-index: 100;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-color);
+  background: #f4f7f8;
+  border-right: none;
   display: flex;
   flex-direction: column;
   transition: transform var(--transition-normal);
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.sidebar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  overflow: hidden;
 }
 
 .sidebar-brand {
-  padding: var(--space-lg) var(--space-lg);
-  border-bottom: 1px solid var(--border-color);
+  padding: 32px 24px 12px;
+  border-bottom: none;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--space-md);
-  min-height: var(--header-height);
+  min-height: auto;
 }
 
 .sidebar-brand-icon {
@@ -392,6 +386,13 @@ img {
 .sidebar-nav {
   flex: 1;
   padding: var(--space-md) var(--space-sm);
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .sidebar-section-label {
@@ -407,14 +408,22 @@ img {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: 10px var(--space-md);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
+  padding: 8px var(--space-md);
+  border-radius: 8px;
+  color: #334155;
   font-size: 0.875rem;
   font-weight: 500;
   transition: all var(--transition-fast);
   margin-bottom: 2px;
   cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+}
+
+button.sidebar-item {
+  font-family: inherit;
+  text-align: left;
 }
 
 .sidebar-item:hover {
@@ -423,9 +432,10 @@ img {
 }
 
 .sidebar-item.active {
-  background: var(--accent-gradient-soft);
-  color: var(--text-accent);
-  border: 1px solid rgba(0, 172, 201, 0.15);
+  background: rgba(128, 186, 39, 0.15);
+  color: #4a6b16;
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 .sidebar-item-icon {
@@ -498,12 +508,12 @@ img {
   backdrop-filter: blur(4px);
 }
 
-/* HEADER */
+/* HEADER — hidden on desktop, visible on mobile */
 .header {
   height: var(--header-height);
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-xl);
@@ -615,7 +625,58 @@ img {
 .page-content {
   flex: 1;
   padding: var(--space-xl);
-  max-width: 1400px;
+}
+
+/* ── Page Toolbar (sticky title + search + filters) ── */
+.page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #ffffff;
+  /* If directly inside animate-fade-in or similar, offset page padding */
+  margin: calc(-1 * var(--space-xl)) calc(-1 * var(--space-xl)) var(--space-md);
+  padding: 1.25rem var(--space-xl) 1rem;
+  width: calc(100% + var(--space-xl) * 2);
+  flex-wrap: wrap;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.info-panel > .page-toolbar {
+  /* If inside info-panel, offset both info-panel padding AND page padding */
+  margin: calc(-2 * var(--space-xl)) calc(-2 * var(--space-xl)) var(--space-md);
+  padding: 1.25rem calc(2 * var(--space-xl)) 1rem;
+  width: calc(100% + var(--space-xl) * 4);
+}
+
+
+.main-content.is-scrolled .page-toolbar {
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+  padding-top: 1rem;
+  padding-bottom: 0.85rem;
+}
+
+.page-toolbar-title {
+  flex-shrink: 0;
+}
+
+.page-toolbar-title h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.page-toolbar-title p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
 }
 
 /* =============================================
@@ -781,7 +842,7 @@ img {
 /* Info Panel */
 .info-panel {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: none;
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   margin-bottom: var(--space-xl);
@@ -1006,8 +1067,16 @@ img {
     margin-left: 0;
   }
 
+  .header {
+    display: flex;
+  }
+
   .header-burger {
     display: flex;
+  }
+
+  .page-toolbar {
+    position: static;
   }
 }
 

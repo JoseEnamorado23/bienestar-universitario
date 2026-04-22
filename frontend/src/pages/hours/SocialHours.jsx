@@ -205,14 +205,14 @@ export default function SocialHours() {
               {expandedSections.loans && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Implemento</th>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Estado</th>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Inicio</th>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Devolución</th>
-                          <th style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 500 }}>Horas</th>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Implemento</th>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estado</th>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inicio</th>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Devolución</th>
+                          <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Horas</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -260,12 +260,12 @@ export default function SocialHours() {
               {expandedSections.activities && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Actividad</th>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Fecha</th>
-                          <th style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 500 }}>Horas</th>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actividad</th>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</th>
+                          <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Horas</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -312,12 +312,12 @@ export default function SocialHours() {
               {expandedSections.additional && hasAdditional && (
                 <div style={{ padding: '0 1rem 1rem 1rem', borderTop: '1px solid rgba(0,0,0,0.03)' }}>
                   <div style={{ overflowX: 'auto' }}>
-                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem' }}>
+                    <table className="responsive-table" style={{ width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Motivo</th>
-                          <th style={{ padding: '10px 4px', fontWeight: 500 }}>Fecha</th>
-                          <th style={{ padding: '10px 4px', textAlign: 'right', fontWeight: 500 }}>Horas</th>
+                        <tr style={{ textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Motivo</th>
+                          <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</th>
+                          <th style={{ padding: '1rem', textAlign: 'right', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Horas</th>
                         </tr>
                       </thead>
                       <tbody>

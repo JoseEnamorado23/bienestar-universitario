@@ -59,6 +59,10 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in">
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-lg)' }}>
+        <h1>{config.title}</h1>
+        <p>{`Hola, ${user?.first_name}. ${config.subtitle}`}</p>
+      </div>
       {user.role === ROLES.SUPER_ADMIN && stats && (
         <div className="stats-grid stagger-children">
           <StatsCard

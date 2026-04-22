@@ -429,8 +429,12 @@ export default function UserManagement() {
   return (
     <div className="animate-fade-in">
       <div className="info-panel">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          
+        <div className="page-toolbar">
+          <div className="page-toolbar-title">
+            <h1>Administradores</h1>
+            <p>Control de usuarios y permisos</p>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end' }}>
             {/* Search Bar */}
             <div className="mobile-search-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px', display: 'flex', alignItems: 'center' }}>
@@ -578,12 +582,12 @@ export default function UserManagement() {
           </div>
         ) : (
           <>
-            <div className="profile-list-wrapper" style={{ overflowX: 'auto' }}>
+            <div className="profile-list-wrapper" style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)' }}>
               <table className="responsive-table profile-list" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
+                  <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
                     {['Cédula', 'Nombre / Apellido', 'Correo', 'Rol', 'Estado', 'Creado', 'Acciones'].map(h => (
-                      <th key={h} style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.8rem' }}>{h}</th>
+                      <th key={h} style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>

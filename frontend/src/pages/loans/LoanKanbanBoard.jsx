@@ -456,6 +456,10 @@ export default function LoanKanbanBoard() {
 
   return (
     <div className="animate-fade-in" style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-md)' }}>
+        <h1>Tablero Kanban</h1>
+        <p>Vista rápida de préstamos diseñada como un tablero de notas adhesivas.</p>
+      </div>
       <div style={{ 
         flex: 1,
         display: 'flex', 

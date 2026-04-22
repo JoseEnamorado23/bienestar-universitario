@@ -152,7 +152,7 @@ export default function AdminPermissions() {
   return (
     <div className="animate-fade-in">
       <div className="info-panel">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1.5rem' }}>
+        <div className="page-toolbar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button 
               onClick={() => navigate('/dashboard/usuarios')} 
@@ -161,11 +161,9 @@ export default function AdminPermissions() {
             >
               <HiOutlineArrowLeft size={20} />
             </button>
-            <div>
-              <h3 style={{ margin: 0 }}>Gestión de Accesos</h3>
-              <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                Personalizando para: <strong>{admin?.first_name} {admin?.last_name}</strong>
-              </p>
+            <div className="page-toolbar-title">
+              <h1>Gestión de Permisos</h1>
+              <p>Personalizando para: <strong>{admin?.first_name} {admin?.last_name}</strong></p>
             </div>
           </div>
 

@@ -285,12 +285,10 @@ export default function InventoryManagement() {
     <div className="animate-fade-in">
       <div className="info-panel">
         {/* Table Header with Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(128,186,39,0.1)', color: '#80ba27', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <HiOutlineCube size={24} />
-            </div>
-            <h3 style={{ margin: 0 }}>Implementos</h3>
+        <div className="page-toolbar">
+          <div className="page-toolbar-title">
+            <h1>Inventario de Implementos</h1>
+            <p>Gestiona los artículos deportivos disponibles para préstamos</p>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, justifyContent: 'flex-end', minWidth: '300px' }}>

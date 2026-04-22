@@ -67,6 +67,10 @@ export default function StudentLoans() {
 
   return (
     <div className="animate-fade-in">
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-lg)' }}>
+        <h1>Mis Préstamos</h1>
+        <p>Consulta el estado de tus solicitudes y el historial de préstamos realizados</p>
+      </div>
 
       {/* Active / Pending loans */}
       <h3 style={{ marginBottom: '1rem', fontSize: '1rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -92,14 +96,15 @@ export default function StudentLoans() {
             Historial
           </h3>
           <div className="info-panel" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)' }}>
             <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-glass)' }}>
-                  <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Implemento</th>
-                  <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Estado</th>
-                  <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Inicio</th>
-                  <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Devolución</th>
-                  <th style={{ padding: '0.85rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Horas ganadas</th>
+                <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Implemento</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estado</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inicio</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Devolución</th>
+                  <th style={{ padding: '1rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Horas ganadas</th>
                 </tr>
               </thead>
               <tbody>
@@ -123,6 +128,7 @@ export default function StudentLoans() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </>
       )}

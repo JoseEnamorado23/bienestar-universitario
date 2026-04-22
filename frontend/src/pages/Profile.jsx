@@ -50,6 +50,10 @@ export default function Profile() {
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-lg)' }}>
+        <h1>Mi Perfil</h1>
+        <p>Administra tu información personal y seguridad de la cuenta</p>
+      </div>
 
       <div className="responsive-grid-2" style={{ gap: '2rem' }}>
         {/* Info Column */}

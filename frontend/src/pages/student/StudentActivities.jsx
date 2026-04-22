@@ -157,6 +157,10 @@ export default function StudentActivities() {
 
   return (
     <div className="animate-fade-in">
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-lg)' }}>
+        <h1>Actividades</h1>
+        <p>Explora las actividades disponibles y registra tu asistencia escaneando el QR</p>
+      </div>
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid var(--border-color)' }}>
         {[
@@ -220,12 +224,13 @@ export default function StudentActivities() {
             </div>
           ) : (
             <div className="info-panel" style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)' }}>
               <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-glass)' }}>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600 }}>Actividad</th>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600 }}>Horas</th>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontWeight: 600 }}>Fecha</th>
+                  <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'rgba(0,0,0,0.02)' }}>
+                    <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actividad</th>
+                    <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Horas</th>
+                    <th style={{ padding: '1rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -244,6 +249,7 @@ export default function StudentActivities() {
                   ))}
                 </tbody>
               </table>
+            </div>
             </div>
           )}
         </>

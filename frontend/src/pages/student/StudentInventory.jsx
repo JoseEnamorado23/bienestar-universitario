@@ -70,6 +70,10 @@ export default function StudentInventory() {
 
   return (
     <div className="animate-fade-in">
+      <div className="page-toolbar-title" style={{ marginBottom: 'var(--space-lg)' }}>
+        <h1>Catálogo de Implementos</h1>
+        <p>Explora los artículos deportivos y de bienestar disponibles para solicitar</p>
+      </div>
       <div style={{ padding: '1rem', background: 'rgba(0, 172, 201, 0.1)', border: '1px solid rgba(0, 172, 201, 0.3)', borderRadius: '8px', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1.5rem' }}>
            <HiOutlineClock size={24} color="var(--primary-color)" style={{ flexShrink: 0 }} />
            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
