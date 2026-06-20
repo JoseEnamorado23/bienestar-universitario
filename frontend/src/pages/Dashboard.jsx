@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-// ... existing imports ...
-import { getDashboardConfig } from '../utils/permissions';
-import { ROLES, ROLE_LABELS } from '../utils/constants';
+import { getDashboardConfig, hasPermission, hasAnyPermission } from '../utils/permissions';
+import { ROLES, ROLE_LABELS, PERMISSIONS } from '../utils/constants';
 import StatsCard from '../components/cards/StatsCard';
 import QuickAction from '../components/cards/QuickAction';
 import api from '../api/axios';
@@ -16,15 +15,48 @@ import {
   HiOutlineCalendar,
   HiOutlineClock,
   HiOutlineCube,
+  HiOutlineChevronRight
 } from 'react-icons/hi';
+import toast from 'react-hot-toast';
+
+// Helper for date formatting
+function formatDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+// Helper for badges
+const STATUS_CONFIG = {
+  SOLICITADO: { label: 'Solicitado', bg: 'rgba(240, 147, 251, 0.15)', color: '#f093fb' },
+  ACTIVO:     { label: 'Activo',     bg: 'rgba(0, 172, 201, 0.15)',   color: 'var(--primary-color)' },
+  VENCIDO:    { label: 'Vencido',    bg: 'rgba(239, 68, 68, 0.15)',   color: '#ef4444' },
+  DEVUELTO:   { label: 'Devuelto',   bg: 'rgba(128, 186, 39, 0.15)', color: 'var(--success)' },
+  RECHAZADO:  { label: 'Rechazado', bg: 'rgba(239, 68, 68, 0.15)',   color: '#ef4444' },
+};
+
+function StatusBadge({ status }) {
+  const cfg = STATUS_CONFIG[status] || { label: status, bg: 'rgba(255,255,255,0.1)', color: 'inherit' };
+  return (
+    <span style={{ padding: '4px 12px', borderRadius: '20px', background: cfg.bg, color: cfg.color, fontSize: '0.78rem', fontWeight: 600 }}>
+      {cfg.label}
+    </span>
+  );
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { setHeaderContent, onOpenNewLoan } = useOutletContext();
-  const [stats, setStats] = useState(null);
-  const [loadingStats, setLoadingStats] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Data states
+  const [superAdminStats, setSuperAdminStats] = useState(null);
+  const [loansData, setLoansData] = useState({ recent: [], activeCount: 0 });
+  const [activitiesData, setActivitiesData] = useState({ recent: [], count: 0 });
+  const [inventoryCount, setInventoryCount] = useState(0);
+  const [auditLogs, setAuditLogs] = useState([]);
 
   const config = getDashboardConfig(user?.role);
+  const permissions = user?.permissions || [];
 
   const handleActionClick = (action) => {
     if (action.path === 'modal:new-loan') {
@@ -39,21 +71,77 @@ export default function Dashboard() {
         subtitle: `Hola, ${user?.first_name}. ${config.subtitle}`
       });
     }
-    // We only want to run this when the role or name changes, 
-    // or when the header setter becomes available.
   }, [user?.role, user?.first_name, setHeaderContent]);
 
-  // Fetch system stats for super_admin
+  // Fetch all necessary data based on permissions
   useEffect(() => {
-    if (user?.role === ROLES.SUPER_ADMIN) {
-      setLoadingStats(true);
-      api
-        .get('/auth/super-admin-info')
-        .then(({ data }) => setStats(data.stats))
-        .catch(() => setStats(null))
-        .finally(() => setLoadingStats(false));
+    if (!user || user.role === ROLES.STUDENT) {
+      setLoading(false);
+      return;
     }
-  }, [user?.role]);
+
+    const fetchData = async () => {
+      setLoading(true);
+      const promises = [];
+
+      // 1. Super Admin Stats
+      if (user.role === ROLES.SUPER_ADMIN) {
+        promises.push(
+          api.get('/auth/super-admin-info').then(res => setSuperAdminStats(res.data.stats)).catch(() => {})
+        );
+      }
+
+      // 2. Loans Data
+      if (hasAnyPermission(permissions, [PERMISSIONS.LOAN_READ_ALL])) {
+        // Recent loans
+        promises.push(
+          api.get('/loans/?limit=5&sort_by=created_at&order=desc').then(res => {
+            setLoansData(prev => ({ ...prev, recent: res.data.items }));
+          }).catch(() => {})
+        );
+        // Active loans count
+        promises.push(
+          api.get('/loans/?status=ACTIVO&limit=1').then(res => {
+            setLoansData(prev => ({ ...prev, activeCount: res.data.total }));
+          }).catch(() => {})
+        );
+      }
+
+      // 3. Activities Data
+      if (hasAnyPermission(permissions, [PERMISSIONS.ACTIVITY_READ_ALL, PERMISSIONS.ACTIVITY_MANAGE])) {
+        promises.push(
+          api.get('/activities/?limit=5').then(res => {
+            // Actividades endpoint currently returns a list, maybe we count them or just use length
+            // We assume res.data is an array
+            setActivitiesData({ recent: res.data.slice(0, 5), count: res.data.length });
+          }).catch(() => {})
+        );
+      }
+
+      // 4. Inventory Data
+      if (hasAnyPermission(permissions, [PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_MANAGE])) {
+        promises.push(
+          api.get('/inventory/').then(res => {
+            setInventoryCount(res.data.length);
+          }).catch(() => {})
+        );
+      }
+
+      // 5. Audit Logs
+      if (hasAnyPermission(permissions, [PERMISSIONS.SYSTEM_AUDIT_LOGS])) {
+        promises.push(
+          api.get('/audit/logs?limit=5').then(res => {
+            setAuditLogs(res.data.items || []);
+          }).catch(() => {})
+        );
+      }
+
+      await Promise.allSettled(promises);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [user, permissions]);
 
   if (!user) return null;
 
@@ -63,119 +151,38 @@ export default function Dashboard() {
         <h1>{config.title}</h1>
         <p>{`Hola, ${user?.first_name}. ${config.subtitle}`}</p>
       </div>
-      {user.role === ROLES.SUPER_ADMIN && stats && (
-        <div className="stats-grid stagger-children">
-          <StatsCard
-            label="Administradores"
-            value={stats.total_admins}
-            icon={HiOutlineUsers}
-            color="#00acc9"
-          />
-          <StatsCard
-            label="Estudiantes"
-            value={stats.total_students}
-            icon={HiOutlineAcademicCap}
-            color="#80ba27"
-          />
-          <StatsCard
-            label="Roles"
-            value={stats.total_roles}
-            icon={HiOutlineShieldCheck}
-            color="#f093fb"
-          />
-          <StatsCard
-            label="Permisos"
-            value={stats.total_permissions}
-            icon={HiOutlineKey}
-            color="#4facfe"
-          />
+
+      {/* ─── STATS CARDS ────────────────────────────────────────────── */}
+      {user.role === ROLES.SUPER_ADMIN && superAdminStats && (
+        <div className="stats-grid stagger-children" style={{ marginBottom: '2rem' }}>
+          <StatsCard label="Administradores" value={superAdminStats.total_admins} icon={HiOutlineUsers} color="#00acc9" />
+          <StatsCard label="Estudiantes" value={superAdminStats.total_students} icon={HiOutlineAcademicCap} color="#80ba27" />
+          <StatsCard label="Roles" value={superAdminStats.total_roles} icon={HiOutlineShieldCheck} color="#f093fb" />
+          <StatsCard label="Permisos" value={superAdminStats.total_permissions} icon={HiOutlineKey} color="#4facfe" />
         </div>
       )}
 
-      {/* Admin stats for non-super admins */}
-      {user.role === ROLES.ADMIN_FULL && (
-        <div className="stats-grid stagger-children">
-          <StatsCard
-            label="Préstamos Activos"
-            value="—"
-            icon={HiOutlineClipboardList}
-            color="#00acc9"
-            change="Módulo próximamente"
-          />
-          <StatsCard
-            label="Actividades"
-            value="—"
-            icon={HiOutlineCalendar}
-            color="#80ba27"
-            change="Módulo próximamente"
-          />
-          <StatsCard
-            label="Inventario"
-            value="—"
-            icon={HiOutlineCube}
-            color="#f093fb"
-            change="Módulo próximamente"
-          />
-          <StatsCard
-            label="Horas Sociales"
-            value="—"
-            icon={HiOutlineClock}
-            color="#4facfe"
-            change="Módulo próximamente"
-          />
+      {user.role !== ROLES.SUPER_ADMIN && user.role !== ROLES.STUDENT && (
+        <div className="stats-grid stagger-children" style={{ marginBottom: '2rem' }}>
+          {hasAnyPermission(permissions, [PERMISSIONS.LOAN_READ_ALL]) && (
+             <StatsCard label="Préstamos Activos" value={loading ? '...' : loansData.activeCount} icon={HiOutlineClipboardList} color="#00acc9" />
+          )}
+          {hasAnyPermission(permissions, [PERMISSIONS.ACTIVITY_READ_ALL, PERMISSIONS.ACTIVITY_MANAGE]) && (
+             <StatsCard label="Actividades" value={loading ? '...' : activitiesData.count} icon={HiOutlineCalendar} color="#80ba27" />
+          )}
+          {hasAnyPermission(permissions, [PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_MANAGE]) && (
+             <StatsCard label="Inventario" value={loading ? '...' : inventoryCount} icon={HiOutlineCube} color="#f093fb" />
+          )}
         </div>
       )}
 
-      {/* Loans admin stats */}
-      {user.role === ROLES.ADMIN_LOANS && (
-        <div className="stats-grid stagger-children">
-          <StatsCard
-            label="Préstamos Activos"
-            value="—"
-            icon={HiOutlineClipboardList}
-            color="#00acc9"
-            change="Módulo próximamente"
-          />
-          <StatsCard
-            label="Inventario"
-            value="—"
-            icon={HiOutlineCube}
-            color="#80ba27"
-            change="Módulo próximamente"
-          />
-        </div>
-      )}
+      {user.role === ROLES.STUDENT && <StudentDashboardStats />}
 
-      {/* Activities admin stats */}
-      {user.role === ROLES.ADMIN_ACTIVITIES && (
-        <div className="stats-grid stagger-children">
-          <StatsCard
-            label="Actividades"
-            value="—"
-            icon={HiOutlineCalendar}
-            color="#00acc9"
-            change="Módulo próximamente"
-          />
-          <StatsCard
-            label="Horas Sociales"
-            value="—"
-            icon={HiOutlineClock}
-            color="#80ba27"
-            change="Módulo próximamente"
-          />
-        </div>
-      )}
-
-      {/* Student stats */}
-      {user.role === ROLES.STUDENT && (
-        <StudentDashboardStats />
-      )}
-
-      {/* Quick Actions */}
+      {/* ─── QUICK ACTIONS ──────────────────────────────────────────── */}
       {config.quickActions.length > 0 && (
         <>
-          <h3 className="quick-actions-title">Acciones Rápidas</h3>
-          <div className="quick-actions-grid stagger-children">
+          <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>Acciones Rápidas</h3>
+          <div className="quick-actions-grid stagger-children" style={{ marginBottom: '2.5rem' }}>
             {config.quickActions.map((action, idx) => (
               <QuickAction
                 key={idx}
@@ -190,7 +197,133 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* User info panel */}
+      {/* ─── DATA TABLES ────────────────────────────────────────────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+        
+        {/* RECENT LOANS */}
+        {hasAnyPermission(permissions, [PERMISSIONS.LOAN_READ_ALL]) && user.role !== ROLES.STUDENT && (
+          <div className="info-panel" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem' }}>
+                <HiOutlineClipboardList style={{ color: '#00acc9' }} /> Últimos Préstamos
+              </h3>
+              <Link to="/dashboard/prestamos" style={{ fontSize: '0.85rem', color: 'var(--primary-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                Ver todos <HiOutlineChevronRight />
+              </Link>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Implemento</th>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estudiante</th>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}><div className="spinner" style={{ margin: '0 auto' }}></div></td></tr>
+                  ) : loansData.recent.length === 0 ? (
+                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay préstamos recientes</td></tr>
+                  ) : (
+                    loansData.recent.map(loan => (
+                      <tr key={loan.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{loan.item?.name || '-'}</td>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{loan.student?.first_name} {loan.student?.last_name}</td>
+                        <td style={{ padding: '0.85rem 1.5rem' }}><StatusBadge status={loan.status} /></td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* RECENT ACTIVITIES */}
+        {hasAnyPermission(permissions, [PERMISSIONS.ACTIVITY_READ_ALL, PERMISSIONS.ACTIVITY_MANAGE]) && user.role !== ROLES.STUDENT && (
+          <div className="info-panel" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem' }}>
+                <HiOutlineCalendar style={{ color: '#80ba27' }} /> Actividades Recientes
+              </h3>
+              <Link to="/dashboard/actividades" style={{ fontSize: '0.85rem', color: 'var(--primary-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                Ver todas <HiOutlineChevronRight />
+              </Link>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actividad</th>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}><div className="spinner" style={{ margin: '0 auto' }}></div></td></tr>
+                  ) : activitiesData.recent.length === 0 ? (
+                    <tr><td colSpan="2" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay actividades</td></tr>
+                  ) : (
+                    activitiesData.recent.map(act => (
+                      <tr key={act.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.9rem', fontWeight: 500 }}>{act.title}</td>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{formatDate(act.date)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* RECENT AUDIT LOGS */}
+        {hasAnyPermission(permissions, [PERMISSIONS.SYSTEM_AUDIT_LOGS]) && user.role !== ROLES.STUDENT && (
+          <div className="info-panel" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.05rem' }}>
+                <HiOutlineShieldCheck style={{ color: '#4facfe' }} /> Últimas Acciones
+              </h3>
+              <Link to="/dashboard/auditoria" style={{ fontSize: '0.85rem', color: 'var(--primary-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+                Ver auditoría <HiOutlineChevronRight />
+              </Link>
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="responsive-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ background: 'rgba(0,0,0,0.02)', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Acción</th>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Usuario</th>
+                    <th style={{ padding: '0.85rem 1.5rem', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}><div className="spinner" style={{ margin: '0 auto' }}></div></td></tr>
+                  ) : auditLogs.length === 0 ? (
+                    <tr><td colSpan="3" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay acciones recientes</td></tr>
+                  ) : (
+                    auditLogs.map(log => (
+                      <tr key={log.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          <span style={{ display: 'inline-block', padding: '2px 8px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px' }}>
+                            {log.action}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{log.user_email}</td>
+                        <td style={{ padding: '0.85rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{formatDate(log.timestamp)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ─── ACCOUNT INFO PANEL ─────────────────────────────────────── */}
       <div className="info-panel">
         <h3>Información de Cuenta</h3>
         <div className="info-row">
@@ -250,8 +383,7 @@ function StudentDashboardStats() {
 
   return (
     <>
-      {/* Stat cards */}
-      <div className="stats-grid stagger-children">
+      <div className="stats-grid stagger-children" style={{ marginBottom: '2rem' }}>
         <StatsCard
           label="Horas Completadas"
           value={loading ? '…' : `${hoursCompleted}h`}
@@ -268,7 +400,6 @@ function StudentDashboardStats() {
         />
       </div>
 
-      {/* Progress bar */}
       {!loading && hoursRequired > 0 && (
         <div className="info-panel" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.75rem' }}>
@@ -277,8 +408,6 @@ function StudentDashboardStats() {
               <strong style={{ color: 'var(--text-primary)' }}>{hoursCompleted}h</strong> / {hoursRequired}h
             </span>
           </div>
-
-          {/* Bar container */}
           <div style={{ height: '14px', borderRadius: '99px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
             <div style={{
               height: '100%',
@@ -289,7 +418,6 @@ function StudentDashboardStats() {
               boxShadow: `0 0 8px ${barColor}66`
             }} />
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.6rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
             <span>{pct.toFixed(0)}% completado</span>
             {pct < 100
